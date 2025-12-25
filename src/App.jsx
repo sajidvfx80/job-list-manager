@@ -43,6 +43,27 @@ function App() {
     }
   }, [darkMode]);
 
+  // Auto-refresh data every hour (3600000 milliseconds)
+  useEffect(() => {
+    const refreshInterval = setInterval(async () => {
+      try {
+        await loadJobs();
+        await loadEmployees();
+        const now = new Date();
+        setLastRefreshTime(now);
+        setShowRefreshNotification(true);
+        // Hide notification after 3 seconds
+        setTimeout(() => setShowRefreshNotification(false), 3000);
+        console.log('Data refreshed automatically at', now.toLocaleTimeString());
+      } catch (error) {
+        console.error('Error during auto-refresh:', error);
+      }
+    }, 3600000); // 1 hour = 3600000 milliseconds
+
+    // Cleanup interval on component unmount
+    return () => clearInterval(refreshInterval);
+  }, [selectedClient]); // Re-run if selectedClient changes
+
   const loadEmployees = async () => {
     try {
       const employeesList = await getEmployees();
