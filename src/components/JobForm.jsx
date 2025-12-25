@@ -96,23 +96,27 @@ const JobForm = ({ job = null, onSave, onCancel }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!formData.client || !formData.assignedTo || !formData.deliveryDate || !formData.jobName) {
-      alert('Please fill in all required fields');
+    
+    // Only require client and assignedTo - make other fields optional
+    if (!formData.client || !formData.assignedTo) {
+      alert('Please select a client and assign to an employee');
       return;
     }
 
-    if (!formData.jobType || formData.jobType.length === 0) {
-      alert('Please select at least one job type');
-      return;
-    }
+    // Set default values for missing fields
+    const jobToSave = {
+      ...formData,
+      id: job?.id,
+      jobName: formData.jobName || 'Untitled Job',
+      jobType: formData.jobType && formData.jobType.length > 0 ? formData.jobType : ['SM'],
+      category: formData.category || 'current job',
+      deliveryDate: formData.deliveryDate 
+        ? new Date(formData.deliveryDate).toISOString()
+        : new Date().toISOString(), // Default to today if not set
+      status: formData.status || 'pending',
+    };
 
     try {
-      const jobToSave = {
-        ...formData,
-        id: job?.id,
-        deliveryDate: new Date(formData.deliveryDate).toISOString()
-      };
-
       await saveJob(jobToSave);
       onSave();
     } catch (error) {
@@ -148,7 +152,6 @@ const JobForm = ({ job = null, onSave, onCancel }) => {
                 value={formData.client}
                 onChange={handleChange}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                required
               >
                 <option value="">Select Client</option>
                 {clients.map(client => (
@@ -167,7 +170,6 @@ const JobForm = ({ job = null, onSave, onCancel }) => {
                 value={formData.assignedTo}
                 onChange={handleChange}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                required
               >
                 <option value="">Select Employee</option>
                 {employees.map(emp => (
@@ -179,14 +181,13 @@ const JobForm = ({ job = null, onSave, onCancel }) => {
             {/* Category */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Category <span className="text-red-500">*</span>
+                Category
               </label>
               <select
                 name="category"
                 value={formData.category}
                 onChange={handleChange}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                required
               >
                 {CATEGORIES.map(cat => (
                   <option key={cat} value={cat}>{cat}</option>
@@ -197,7 +198,7 @@ const JobForm = ({ job = null, onSave, onCancel }) => {
             {/* Job Type - Multiple Selection */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Job Type <span className="text-red-500">*</span>
+                Job Type
                 <span className="text-xs text-gray-500 ml-2">(Select multiple if needed)</span>
               </label>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
@@ -213,9 +214,6 @@ const JobForm = ({ job = null, onSave, onCancel }) => {
                   </label>
                 ))}
               </div>
-              {formData.jobType.length === 0 && (
-                <p className="text-xs text-red-500 mt-1">Please select at least one job type</p>
-              )}
             </div>
 
             {/* LED Deliverables */}
@@ -251,7 +249,6 @@ const JobForm = ({ job = null, onSave, onCancel }) => {
                 value={formData.deliveryDate}
                 onChange={handleChange}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 mb-2"
-                required
               />
               
               {/* Quick Date Selection */}
