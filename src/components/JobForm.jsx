@@ -250,9 +250,56 @@ const JobForm = ({ job = null, onSave, onCancel }) => {
                 name="deliveryDate"
                 value={formData.deliveryDate}
                 onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 mb-2"
                 required
               />
+              
+              {/* Quick Date Selection */}
+              <div className="mt-2">
+                <p className="text-xs text-gray-600 mb-2">Quick Select:</p>
+                <div className="flex flex-wrap gap-2">
+                  {(() => {
+                    const today = new Date();
+                    const tomorrow = new Date(today);
+                    tomorrow.setDate(tomorrow.getDate() + 1);
+                    
+                    const quickDates = [
+                      { label: 'Today', date: today },
+                      { label: 'Tomorrow', date: tomorrow }
+                    ];
+                    
+                    // Add next 7 days
+                    for (let i = 2; i <= 8; i++) {
+                      const date = new Date(today);
+                      date.setDate(date.getDate() + i);
+                      const dayName = date.toLocaleDateString('en-US', { weekday: 'long' });
+                      quickDates.push({ label: dayName, date });
+                    }
+                    
+                    return quickDates.map((item, index) => {
+                      const dateStr = item.date.toISOString().split('T')[0];
+                      const displayDate = item.date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+                      const isSelected = formData.deliveryDate === dateStr;
+                      
+                      return (
+                        <button
+                          key={index}
+                          type="button"
+                          onClick={() => setFormData(prev => ({ ...prev, deliveryDate: dateStr }))}
+                          className={`px-3 py-1.5 text-xs font-medium rounded-md transition-colors ${
+                            isSelected
+                              ? 'bg-blue-600 text-white'
+                              : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                          }`}
+                        >
+                          {item.label}
+                          <span className="ml-1 text-xs opacity-75">({displayDate})</span>
+                        </button>
+                      );
+                    });
+                  })()}
+                </div>
+              </div>
             </div>
 
             {/* Status */}
