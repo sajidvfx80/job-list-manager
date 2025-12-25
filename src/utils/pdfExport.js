@@ -31,14 +31,17 @@ export const exportJobsToPDF = (jobs, clientName = null, date = null) => {
           : [jobTypeValue]) 
         : []);
     const jobTypeDisplay = jobTypes.length > 0 ? jobTypes.join(', ') : 'N/A';
-    const jobName = job.job_name || job.jobName || 'N/A';
+    const jobTitle = job.job_title || job.jobTitle || '';
+    const jobName = job.job_name || job.jobName || '';
+    // Prioritize job_title, fallback to job_name only if it's not "Untitled Job"
+    const displayJobName = jobTitle || (jobName && jobName !== 'Untitled Job' ? jobName : '') || 'N/A';
     const assignedTo = job.assigned_to || job.assignedTo;
     const deliveryDate = job.delivery_date || job.deliveryDate;
     const completionStatus = job.completion_status || job.completionStatus;
     
     return [
       job.client || 'N/A',
-      jobName,
+      displayJobName,
       jobTypeDisplay,
       job.category || 'N/A',
       assignedTo || 'N/A',

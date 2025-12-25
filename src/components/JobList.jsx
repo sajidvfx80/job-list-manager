@@ -116,8 +116,10 @@ const JobList = ({ jobs, onUpdate, onDelete, clientName = null }) => {
                 const ledDeliverables = job.led_deliverables || job.ledDeliverables;
                 const hasLED = jobTypes.includes('LED');
                 
-                const jobTitle = job.job_title || job.jobTitle || '-';
-                const jobName = job.job_name || job.jobName || '-';
+                const jobTitle = job.job_title || job.jobTitle || '';
+                const jobName = job.job_name || job.jobName || '';
+                // Prioritize job_title, fallback to job_name only if it's not "Untitled Job"
+                const displayJobName = jobTitle || (jobName && jobName !== 'Untitled Job' ? jobName : '') || '-';
                 
                 return (
                   <tr key={job.id} className="hover:bg-gray-50">
@@ -125,10 +127,10 @@ const JobList = ({ jobs, onUpdate, onDelete, clientName = null }) => {
                       {job.client}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {jobTitle}
+                      {displayJobName}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {jobName}
+                      {jobName && jobName !== 'Untitled Job' ? jobName : '-'}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <span className={`px-2 py-1 text-xs font-semibold rounded-full text-white ${getCategoryColor(job.category)}`}>

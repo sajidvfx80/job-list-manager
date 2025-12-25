@@ -130,7 +130,10 @@ const EmployeeJobsModal = ({ isOpen, onClose, employeeName, onDelete }) => {
                   {jobs.map(job => {
                     const jobTypeDisplay = getJobTypeDisplay(job);
                     const deliveryDate = job.delivery_date || job.deliveryDate;
-                    const jobName = job.job_name || job.jobName || 'N/A';
+                    const jobTitle = job.job_title || job.jobTitle || '';
+                    const jobName = job.job_name || job.jobName || '';
+                    // Prioritize job_title over job_name, especially if job_name is "Untitled Job"
+                    const displayJobName = (jobTitle && jobTitle.trim()) || (jobName && jobName !== 'Untitled Job' ? jobName : '') || 'N/A';
                     const completionStatus = job.completion_status || job.completionStatus;
                     
                     return (
@@ -139,7 +142,7 @@ const EmployeeJobsModal = ({ isOpen, onClose, employeeName, onDelete }) => {
                           {job.client}
                         </td>
                         <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900">
-                          {jobName}
+                          {displayJobName}
                         </td>
                         <td className="px-4 py-3 whitespace-nowrap">
                           <span className={`px-2 py-1 text-xs font-semibold rounded-full text-white ${getCategoryColor(job.category)}`}>

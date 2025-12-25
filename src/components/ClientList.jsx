@@ -133,7 +133,8 @@ const ClientList = ({ onClientSelect, selectedClient, refreshKey = 0, onJobUpdat
                       
                       const jobTitle = job.job_title || job.jobTitle || '';
                       const jobName = job.job_name || job.jobName || '';
-                      const displayName = jobTitle || jobName || jobTypeDisplay || 'N/A';
+                      // Prioritize job_title, fallback to job_name only if it's not "Untitled Job"
+                      const displayName = jobTitle || (jobName && jobName !== 'Untitled Job' ? jobName : '') || jobTypeDisplay || 'N/A';
                       
                       return (
                         <div
