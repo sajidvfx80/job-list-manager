@@ -26,12 +26,14 @@ export const exportJobsToPDF = (jobs, clientName = null, date = null) => {
           : [jobTypeValue]) 
         : []);
     const jobTypeDisplay = jobTypes.length > 0 ? jobTypes.join(', ') : 'N/A';
+    const jobName = job.job_name || job.jobName || 'N/A';
     const assignedTo = job.assigned_to || job.assignedTo;
     const deliveryDate = job.delivery_date || job.deliveryDate;
     const completionStatus = job.completion_status || job.completionStatus;
     
     return [
       job.client || 'N/A',
+      jobName,
       jobTypeDisplay,
       job.category || 'N/A',
       assignedTo || 'N/A',
@@ -44,7 +46,7 @@ export const exportJobsToPDF = (jobs, clientName = null, date = null) => {
   // Add table
   doc.autoTable({
     startY: 30,
-    head: [['Client', 'Job Type', 'Category', 'Assigned To', 'Delivery Date', 'Status', 'Completion']],
+    head: [['Client', 'Job Name', 'Job Type', 'Category', 'Assigned To', 'Delivery Date', 'Status', 'Completion']],
     body: tableData,
     styles: { fontSize: 9 },
     headStyles: { fillColor: [66, 139, 202] },

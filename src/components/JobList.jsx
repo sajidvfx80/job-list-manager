@@ -71,6 +71,9 @@ const JobList = ({ jobs, onUpdate, clientName = null }) => {
                   Client
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Job Name
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Category
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -110,10 +113,15 @@ const JobList = ({ jobs, onUpdate, clientName = null }) => {
                 const ledDeliverables = job.led_deliverables || job.ledDeliverables;
                 const hasLED = jobTypes.includes('LED');
                 
+                const jobName = job.job_name || job.jobName || '-';
+                
                 return (
                   <tr key={job.id} className="hover:bg-gray-50">
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                       {job.client}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      {jobName}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <span className={`px-2 py-1 text-xs font-semibold rounded-full text-white ${getCategoryColor(job.category)}`}>

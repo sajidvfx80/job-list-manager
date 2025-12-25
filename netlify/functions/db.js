@@ -39,6 +39,7 @@ export const initDatabase = async () => {
       client VARCHAR(255) NOT NULL,
       assigned_to VARCHAR(255) NOT NULL,
       category VARCHAR(50) NOT NULL,
+      job_name VARCHAR(255),
       job_type TEXT[],  -- Changed to TEXT[] to support multiple job types
       delivery_date TIMESTAMP NOT NULL,
       status VARCHAR(50) DEFAULT 'pending',
@@ -48,6 +49,19 @@ export const initDatabase = async () => {
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
       updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     )
+  `;
+  
+  -- Add job_name column if it doesn't exist (for existing databases)
+  await db`
+    DO $$ 
+    BEGIN 
+      IF NOT EXISTS (
+        SELECT 1 FROM information_schema.columns 
+        WHERE table_name = 'jobs' AND column_name = 'job_name'
+      ) THEN
+        ALTER TABLE jobs ADD COLUMN job_name VARCHAR(255);
+      END IF;
+    END $$;
   `;
 
   // Insert default clients if they don't exist

@@ -17,6 +17,7 @@ const JobForm = ({ job = null, onSave, onCancel }) => {
     client: '',
     assignedTo: '',
     category: 'current job',
+    jobName: '',
     jobType: [], // Changed to array for multiple selection
     deliveryDate: '',
     status: 'pending',
@@ -59,6 +60,7 @@ const JobForm = ({ job = null, onSave, onCancel }) => {
         client: job.client || '',
         assignedTo: job.assigned_to || job.assignedTo || '',
         category: job.category || 'current job',
+        jobName: job.job_name || job.jobName || '',
         jobType: jobTypes.length > 0 ? jobTypes : [],
         deliveryDate: job.delivery_date ? new Date(job.delivery_date).toISOString().split('T')[0] : (job.deliveryDate ? job.deliveryDate.split('T')[0] : ''),
         status: job.status || 'pending',
@@ -94,7 +96,7 @@ const JobForm = ({ job = null, onSave, onCancel }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!formData.client || !formData.assignedTo || !formData.deliveryDate) {
+    if (!formData.client || !formData.assignedTo || !formData.deliveryDate || !formData.jobName) {
       alert('Please fill in all required fields');
       return;
     }

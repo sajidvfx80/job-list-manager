@@ -146,6 +146,8 @@ const ClientList = ({ onClientSelect, selectedClient, refreshKey = 0, onJobUpdat
                       const deliveryDate = job.delivery_date || job.deliveryDate;
                       const assignedTo = job.assigned_to || job.assignedTo;
                       
+                      const jobName = job.job_name || job.jobName || jobTypeDisplay || 'N/A';
+                      
                       return (
                         <div
                           key={job.id}
@@ -153,8 +155,13 @@ const ClientList = ({ onClientSelect, selectedClient, refreshKey = 0, onJobUpdat
                         >
                           <div className="flex-1">
                             <div className="font-medium text-gray-900">
-                              {jobTypeDisplay || 'N/A'}
+                              {jobName}
                             </div>
+                            {jobTypeDisplay && jobName !== jobTypeDisplay && (
+                              <div className="text-sm text-gray-600 mt-1">
+                                Type: {jobTypeDisplay}
+                              </div>
+                            )}
                             <div className="text-sm text-gray-600">
                               Assigned to: {assignedTo} | Delivery: {format(new Date(deliveryDate), 'MMM dd, yyyy')}
                             </div>
