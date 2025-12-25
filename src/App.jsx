@@ -98,7 +98,15 @@ function App() {
       <header className="bg-white shadow-sm border-b">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex justify-between items-center">
-            <h1 className="text-3xl font-bold text-gray-900">Job List Manager</h1>
+            <div className="flex items-center space-x-4">
+              <button
+                onClick={() => setShowJobForm(true)}
+                className="px-6 py-3 bg-blue-600 text-white text-lg font-semibold rounded-lg hover:bg-blue-700 shadow-lg hover:shadow-xl transition-all transform hover:scale-105"
+              >
+                ➕ Add New Job
+              </button>
+              <h1 className="text-3xl font-bold text-gray-900">Job List Manager</h1>
+            </div>
             <div className="flex space-x-3">
               <button
                 onClick={() => setShowAddClient(true)}
@@ -111,12 +119,6 @@ function App() {
                 className="px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700"
               >
                 Filter by Date
-              </button>
-              <button
-                onClick={() => setShowJobForm(true)}
-                className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
-              >
-                Add New Job
               </button>
             </div>
           </div>
