@@ -18,15 +18,16 @@ export const handler = async (event, context) => {
   }
 
   try {
-    // Initialize database first
+    // Get database connection first
+    const db = getDb();
+    
+    // Initialize database (tables will be created if they don't exist)
     try {
       await initDatabase();
     } catch (initError) {
-      console.error('Database initialization error:', initError);
-      // Continue anyway - table might already exist
+      console.error('Database initialization error (may be safe to ignore):', initError.message);
+      // Continue anyway - tables might already exist
     }
-    
-    const db = getDb();
 
     const { httpMethod, path, body, queryStringParameters } = event;
     // Path will be like /api/jobs or /api/jobs/123
@@ -263,11 +264,21 @@ export const handler = async (event, context) => {
       body: JSON.stringify({ error: 'Not found' }),
     };
   } catch (error) {
-    console.error('Error:', error);
+    console.error('Error in jobs function:', error);
+    console.error('Error stack:', error.stack);
+    console.error('Error details:', JSON.stringify({
+      message: error.message,
+      name: error.name,
+      code: error.code
+    }, null, 2));
+    
     return {
       statusCode: 500,
       headers,
-      body: JSON.stringify({ error: error.message }),
+      body: JSON.stringify({ 
+        error: error.message || 'Internal server error',
+        type: error.name || 'UnknownError'
+      }),
     };
   }
 };

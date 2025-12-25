@@ -13,4 +13,7 @@
 [functions]
   node_bundler = "esbuild"
   included_files = ["netlify/functions/**"]
+  
+[functions.jobs]
+  timeout = 30
 

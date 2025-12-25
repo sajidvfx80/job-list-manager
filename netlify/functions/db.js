@@ -86,14 +86,18 @@ export const initDatabase = async () => {
     `;
   }
 
-  // Insert default employees if they don't exist
-  const defaultEmployees = ['Mijoy', 'Sajid'];
-  for (const empName of defaultEmployees) {
-    await db`
-      INSERT INTO employees (name)
-      VALUES (${empName})
-      ON CONFLICT (name) DO NOTHING
-    `;
+    // Insert default employees if they don't exist
+    const defaultEmployees = ['Mijoy', 'Sajid'];
+    for (const empName of defaultEmployees) {
+      await db`
+        INSERT INTO employees (name)
+        VALUES (${empName})
+        ON CONFLICT (name) DO NOTHING
+      `;
+    }
+  } catch (error) {
+    console.error('Error initializing database:', error);
+    throw error;
   }
 };
 
