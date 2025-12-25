@@ -6,7 +6,6 @@ const ClientList = ({ onClientSelect, selectedClient, refreshKey = 0, onJobUpdat
   const [clients, setClients] = useState([]);
   const [clientStats, setClientStats] = useState({});
   const [clientJobs, setClientJobs] = useState({});
-  const [expandedClients, setExpandedClients] = useState({});
 
   useEffect(() => {
     const loadClients = async () => {
@@ -33,25 +32,20 @@ const ClientList = ({ onClientSelect, selectedClient, refreshKey = 0, onJobUpdat
     loadClients();
   }, [refreshKey]);
 
-  const toggleClientExpansion = (client) => {
-    setExpandedClients(prev => ({
-      ...prev,
-      [client]: !prev[client]
-    }));
-  };
-
-  const handleCompleteJob = async (job) => {
+  const handleCompleteJob = async (job, isChecked) => {
     try {
-      // Get job data and update status to completed
+      // Get job data and update status to completed or revert
       const jobToUpdate = {
         ...job,
         id: job.id,
         client: job.client,
         assignedTo: job.assigned_to || job.assignedTo,
         category: job.category,
+        jobTitle: job.job_title || job.jobTitle || '',
+        jobName: job.job_name || job.jobName || '',
         jobType: Array.isArray(job.job_type) ? job.job_type : (job.job_type ? [job.job_type] : []),
         deliveryDate: job.delivery_date || job.deliveryDate,
-        status: 'completed',
+        status: isChecked ? 'completed' : 'pending',
         completionStatus: job.completion_status || job.completionStatus,
         ledDeliverables: job.led_deliverables || job.ledDeliverables || [],
         description: job.description || ''
