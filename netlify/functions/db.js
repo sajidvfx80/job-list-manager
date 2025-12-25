@@ -94,7 +94,7 @@ export const initDatabase = async () => {
     }
 
     // Insert default clients if they don't exist (stc first, then CBK, then others)
-    const defaultClients = ['stc', 'CBK', 'BK', 'PH', 'solutions', 'Subway'];
+    const defaultClients = ['stc', 'CBK', 'BK', 'solutions', 'PH', 'Subway'];
     for (const clientName of defaultClients) {
       await db`
         INSERT INTO clients (name)

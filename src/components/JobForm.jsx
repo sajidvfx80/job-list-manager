@@ -6,10 +6,11 @@ const LED_DELIVERABLES = [
   'M2R',
   'Ceremony',
   'Waterfront Outdoor',
-  'Waterfront Indoor 7 Screens'
+  'Waterfront Indoor 7 Screens',
+  'Dae3ty'
 ];
 
-const JOB_TYPES = ['SM', 'LED', 'PMax', 'Branches', 'TikTok'];
+const JOB_TYPES = ['SM', 'LED', 'PMax', 'Branches', 'TikTok', '3D Visual'];
 const CATEGORIES = ['current job', 'upcoming job', 'pending jobs'];
 
 const JobForm = ({ job = null, onSave, onCancel }) => {

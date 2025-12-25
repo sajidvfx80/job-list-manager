@@ -15,11 +15,14 @@ function App() {
   const [jobs, setJobs] = useState([]);
   const [employees, setEmployees] = useState([]);
   const [showJobForm, setShowJobForm] = useState(false);
+  const [editingJob, setEditingJob] = useState(null);
   const [showDateFilter, setShowDateFilter] = useState(false);
   const [showAddClient, setShowAddClient] = useState(false);
   const [showEmployeeModal, setShowEmployeeModal] = useState(false);
   const [showPDFExport, setShowPDFExport] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
+  const [jobFilter, setJobFilter] = useState('all'); // 'all', 'completed', 'current', 'pending'
+  const [darkMode, setDarkMode] = useState(false);
 
   useEffect(() => {
     const init = async () => {
@@ -28,7 +31,15 @@ function App() {
       await loadEmployees();
     };
     init();
-  }, [selectedClient, refreshKey]);
+  }, [selectedClient, refreshKey, jobFilter]);
+
+  useEffect(() => {
+    if (darkMode) {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+  }, [darkMode]);
 
   const loadEmployees = async () => {
     try {
@@ -48,8 +59,18 @@ function App() {
         allJobs = await getJobs();
       }
       
-      // Show all jobs in the full list (including completed)
-      setJobs(allJobs);
+      // Apply filter
+      let filteredJobs = allJobs;
+      if (jobFilter === 'completed') {
+        filteredJobs = allJobs.filter(job => job.status === 'completed');
+      } else if (jobFilter === 'current') {
+        filteredJobs = allJobs.filter(job => job.category === 'current job');
+      } else if (jobFilter === 'pending') {
+        filteredJobs = allJobs.filter(job => job.category === 'pending jobs' || job.status === 'pending');
+      }
+      
+      // Show filtered jobs in the full list
+      setJobs(filteredJobs);
     } catch (error) {
       console.error('Error loading jobs:', error);
       setJobs([]);
@@ -81,6 +102,12 @@ function App() {
   const handleJobAdded = () => {
     setRefreshKey(prev => prev + 1);
     setShowJobForm(false);
+    setEditingJob(null);
+  };
+
+  const handleJobEdit = (job) => {
+    setEditingJob(job);
+    setShowJobForm(true);
   };
 
   const handleClientAdded = () => {
@@ -122,7 +149,20 @@ function App() {
       <header className="bg-white shadow-sm border-b">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex justify-between items-center">
-            <h1 className="text-3xl font-bold text-gray-900">Job List Manager</h1>
+            <h1 className={`text-3xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'} transition-colors duration-300`}>Job List Manager</h1>
+            <div className="flex items-center gap-4">
+              <button
+                onClick={() => setDarkMode(!darkMode)}
+                className={`px-4 py-2 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105 ${
+                  darkMode 
+                    ? 'bg-yellow-500 text-gray-900 hover:bg-yellow-400 shadow-lg' 
+                    : 'bg-gray-800 text-white hover:bg-gray-700 shadow-lg'
+                }`}
+                title={darkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+              >
+                {darkMode ? '☀️ Light' : '🌙 Dark'}
+              </button>
+            </div>
             <div className="flex flex-col space-y-2">
               <div className="flex space-x-3">
                 <button
@@ -157,9 +197,63 @@ function App() {
       </header>
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Job Filter Buttons */}
+        <div className={`${darkMode ? 'bg-gray-800' : 'bg-white'} rounded-xl shadow-xl p-4 mb-6 transition-all duration-300 transform hover:scale-[1.01]`}>
+          <div className="flex flex-wrap gap-3 justify-center">
+            <button
+              onClick={() => setJobFilter('all')}
+              className={`px-6 py-3 rounded-lg font-semibold transition-all duration-300 transform hover:scale-110 hover:shadow-lg ${
+                jobFilter === 'all'
+                  ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-xl scale-105'
+                  : darkMode
+                  ? 'bg-gray-700 text-gray-200 hover:bg-gray-600'
+                  : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+              }`}
+            >
+              📋 All Jobs
+            </button>
+            <button
+              onClick={() => setJobFilter('current')}
+              className={`px-6 py-3 rounded-lg font-semibold transition-all duration-300 transform hover:scale-110 hover:shadow-lg ${
+                jobFilter === 'current'
+                  ? 'bg-gradient-to-r from-green-500 to-emerald-600 text-white shadow-xl scale-105'
+                  : darkMode
+                  ? 'bg-gray-700 text-gray-200 hover:bg-gray-600'
+                  : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+              }`}
+            >
+              ⚡ Current Jobs
+            </button>
+            <button
+              onClick={() => setJobFilter('pending')}
+              className={`px-6 py-3 rounded-lg font-semibold transition-all duration-300 transform hover:scale-110 hover:shadow-lg ${
+                jobFilter === 'pending'
+                  ? 'bg-gradient-to-r from-yellow-500 to-orange-600 text-white shadow-xl scale-105'
+                  : darkMode
+                  ? 'bg-gray-700 text-gray-200 hover:bg-gray-600'
+                  : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+              }`}
+            >
+              ⏳ Pending Jobs
+            </button>
+            <button
+              onClick={() => setJobFilter('completed')}
+              className={`px-6 py-3 rounded-lg font-semibold transition-all duration-300 transform hover:scale-110 hover:shadow-lg ${
+                jobFilter === 'completed'
+                  ? 'bg-gradient-to-r from-purple-500 to-pink-600 text-white shadow-xl scale-105'
+                  : darkMode
+                  ? 'bg-gray-700 text-gray-200 hover:bg-gray-600'
+                  : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+              }`}
+            >
+              ✅ Completed Jobs
+            </button>
+          </div>
+        </div>
+
         {/* Employee Statistics - Clickable to View Jobs */}
         {employees.length > 0 && (
-          <div className="bg-white rounded-lg shadow-md p-6 mb-6">
+          <div className={`${darkMode ? 'bg-gray-800' : 'bg-white'} rounded-xl shadow-xl p-6 mb-6 transition-all duration-300 transform hover:scale-[1.01] hover:shadow-2xl`}>
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-xl font-bold">Employee Job Overview</h2>
             </div>
@@ -231,6 +325,8 @@ function App() {
           refreshKey={refreshKey}
           onJobUpdate={loadJobs}
           onJobDelete={handleJobDelete}
+          onJobEdit={handleJobEdit}
+          darkMode={darkMode}
         />
 
         {/* Selected Client Info */}
@@ -276,8 +372,12 @@ function App() {
       {/* Modals */}
       {showJobForm && (
         <JobForm
+          job={editingJob}
           onSave={handleJobAdded}
-          onCancel={() => setShowJobForm(false)}
+          onCancel={() => {
+            setShowJobForm(false);
+            setEditingJob(null);
+          }}
         />
       )}
 

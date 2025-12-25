@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { getClients, getJobsByClient, saveJob } from '../utils/storage';
 import { format } from 'date-fns';
 
-const ClientList = ({ onClientSelect, selectedClient, refreshKey = 0, onJobUpdate, onJobDelete }) => {
+const ClientList = ({ onClientSelect, selectedClient, refreshKey = 0, onJobUpdate, onJobDelete, onJobEdit, darkMode = false }) => {
   const [clients, setClients] = useState([]);
   const [clientStats, setClientStats] = useState({});
   const [clientJobs, setClientJobs] = useState({});
@@ -100,20 +100,24 @@ const ClientList = ({ onClientSelect, selectedClient, refreshKey = 0, onJobUpdat
           return (
             <div
               key={client}
-              className={`border-2 rounded-lg transition-all ${
+              className={`border-2 rounded-xl transition-all duration-300 transform hover:scale-[1.02] hover:shadow-xl ${
                 isSelected
-                  ? 'border-blue-600 bg-blue-50 shadow-md'
-                  : 'border-gray-200 hover:border-blue-300'
+                  ? darkMode
+                    ? 'border-blue-500 bg-blue-900/30 shadow-2xl scale-105'
+                    : 'border-blue-600 bg-blue-50 shadow-xl scale-105'
+                  : darkMode
+                  ? 'border-gray-700 bg-gray-700/50 hover:border-blue-400 hover:bg-gray-700'
+                  : 'border-gray-200 hover:border-blue-300 hover:bg-blue-50/50'
               }`}
             >
               {/* Client Header */}
               <div className="p-4">
                 <button
                   onClick={() => onClientSelect(client)}
-                  className="w-full text-left"
+                  className="w-full text-left transition-transform duration-300 hover:scale-105"
                 >
-                  <div className="font-semibold text-lg mb-1">{client}</div>
-                  <div className="text-sm text-gray-600">
+                  <div className={`font-semibold text-lg mb-1 ${darkMode ? 'text-white' : 'text-gray-900'} transition-colors duration-300`}>{client}</div>
+                  <div className={`text-sm ${darkMode ? 'text-gray-300' : 'text-gray-600'} transition-colors duration-300`}>
                     <div>Total: {stats.total} | Active: {stats.active}</div>
                     <div className="text-orange-600">Pending: {stats.pending}</div>
                   </div>
@@ -122,7 +126,7 @@ const ClientList = ({ onClientSelect, selectedClient, refreshKey = 0, onJobUpdat
 
               {/* Jobs List - Always Visible in Grid Layout */}
               {jobs.length > 0 && (
-                <div className="border-t border-gray-200 p-4 bg-gray-50">
+                <div className={`border-t ${darkMode ? 'border-gray-700 bg-gray-800/50' : 'border-gray-200 bg-gray-50'} p-4 transition-colors duration-300`}>
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
                     {jobs.map(job => {
                       const jobTypeDisplay = getJobTypeDisplay(job);
@@ -139,7 +143,7 @@ const ClientList = ({ onClientSelect, selectedClient, refreshKey = 0, onJobUpdat
                       return (
                         <div
                           key={job.id}
-                          className="flex flex-col p-3 bg-white rounded-md border border-gray-200 hover:shadow-md transition-shadow"
+                          className={`flex flex-col p-3 ${darkMode ? 'bg-gray-700 border-gray-600' : 'bg-white border-gray-200'} rounded-lg border transition-all duration-300 transform hover:scale-105 hover:shadow-xl hover:shadow-blue-500/20`}
                         >
                           <div className="flex items-start justify-between mb-2">
                             <label className="flex items-center cursor-pointer">
@@ -152,29 +156,38 @@ const ClientList = ({ onClientSelect, selectedClient, refreshKey = 0, onJobUpdat
                               />
                               <span className="ml-2 text-xs text-gray-700">Completed</span>
                             </label>
-                            <button
-                              onClick={() => onJobDelete && onJobDelete(job.id)}
-                              className="text-red-600 hover:text-red-800 text-sm font-medium"
-                              title="Delete job"
-                            >
-                              ✕
-                            </button>
+                            <div className="flex gap-2">
+                              <button
+                                onClick={() => onJobEdit && onJobEdit(job)}
+                                className="px-2 py-1 text-xs bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
+                                title="Edit job"
+                              >
+                                ✏️ Edit
+                              </button>
+                              <button
+                                onClick={() => onJobDelete && onJobDelete(job.id)}
+                                className="px-2 py-1 text-xs bg-red-500 text-white rounded hover:bg-red-600 transition-colors"
+                                title="Delete job"
+                              >
+                                ✕ Delete
+                              </button>
+                            </div>
                           </div>
                           <div className="flex-1">
-                            <div className="font-medium text-gray-900 text-sm mb-1">
+                            <div className={`font-medium text-sm mb-1 ${darkMode ? 'text-white' : 'text-gray-900'} transition-colors duration-300`}>
                               {displayName}
                             </div>
                             {jobTitle && jobName && (
-                              <div className="text-xs text-gray-600 mb-1">
+                              <div className={`text-xs mb-1 ${darkMode ? 'text-gray-300' : 'text-gray-600'} transition-colors duration-300`}>
                                 {jobName}
                               </div>
                             )}
                             {jobTypeDisplay && displayName !== jobTypeDisplay && (
-                              <div className="text-xs text-gray-600 mb-1">
+                              <div className={`text-xs mb-1 ${darkMode ? 'text-gray-300' : 'text-gray-600'} transition-colors duration-300`}>
                                 Type: {jobTypeDisplay}
                               </div>
                             )}
-                            <div className="text-xs text-gray-600 mb-1">
+                            <div className={`text-xs mb-1 ${darkMode ? 'text-gray-300' : 'text-gray-600'} transition-colors duration-300`}>
                               <div>Assigned: {assignedTo}</div>
                               <div>Delivery: {format(new Date(deliveryDate), 'MMM dd, yyyy')}</div>
                             </div>
