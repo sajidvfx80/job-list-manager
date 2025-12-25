@@ -98,25 +98,25 @@ function App() {
       <header className="bg-white shadow-sm border-b">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex justify-between items-center">
-            <div className="flex items-center space-x-4">
-              <button
-                onClick={() => setShowJobForm(true)}
-                className="px-6 py-3 bg-blue-600 text-white text-lg font-semibold rounded-lg hover:bg-blue-700 shadow-lg hover:shadow-xl transition-all transform hover:scale-105"
-              >
-                ➕ Add New Job
-              </button>
-              <h1 className="text-3xl font-bold text-gray-900">Job List Manager</h1>
-            </div>
-            <div className="flex space-x-3">
-              <button
-                onClick={() => setShowAddClient(true)}
-                className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700"
-              >
-                Add Client
-              </button>
+            <h1 className="text-3xl font-bold text-gray-900">Job List Manager</h1>
+            <div className="flex flex-col space-y-2">
+              <div className="flex space-x-3">
+                <button
+                  onClick={() => setShowJobForm(true)}
+                  className="px-6 py-3 bg-blue-600 text-white text-lg font-semibold rounded-lg hover:bg-blue-700 shadow-lg hover:shadow-xl transition-all transform hover:scale-105"
+                >
+                  ➕ Add New Job
+                </button>
+                <button
+                  onClick={() => setShowAddClient(true)}
+                  className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700"
+                >
+                  Add Client
+                </button>
+              </div>
               <button
                 onClick={() => setShowDateFilter(true)}
-                className="px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700"
+                className="w-full px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700"
               >
                 Filter by Date
               </button>
