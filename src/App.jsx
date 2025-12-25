@@ -462,6 +462,15 @@ function App() {
           onClose={() => setShowPDFExport(false)}
         />
       )}
+
+      {showJobFilterModal && (
+        <JobFilterModal
+          isOpen={showJobFilterModal}
+          onClose={() => setShowJobFilterModal(false)}
+          filterType={selectedFilterType}
+          darkMode={darkMode}
+        />
+      )}
     </div>
   );
 }
