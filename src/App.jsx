@@ -296,24 +296,24 @@ function App() {
 
         {/* Stats Overview */}
         <div className="grid grid-cols-1 md:grid-cols-5 gap-4 mb-6">
-          <div className="bg-white rounded-lg shadow-md p-4">
-            <div className="text-sm text-gray-600">Total Jobs</div>
-            <div className="text-2xl font-bold text-gray-900">{stats.total}</div>
+          <div className={`${darkMode ? 'bg-gray-800' : 'bg-white'} rounded-xl shadow-xl p-4 transition-all duration-300 transform hover:scale-110 hover:shadow-2xl hover:rotate-1`}>
+            <div className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'} transition-colors duration-300`}>Total Jobs</div>
+            <div className={`text-2xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'} transition-colors duration-300`}>{stats.total}</div>
           </div>
-          <div className="bg-white rounded-lg shadow-md p-4">
-            <div className="text-sm text-gray-600">Current Jobs</div>
+          <div className={`${darkMode ? 'bg-gradient-to-br from-blue-600 to-blue-800' : 'bg-gradient-to-br from-blue-50 to-blue-100'} rounded-xl shadow-xl p-4 transition-all duration-300 transform hover:scale-110 hover:shadow-2xl hover:rotate-1`}>
+            <div className={`text-sm ${darkMode ? 'text-blue-200' : 'text-gray-600'} transition-colors duration-300`}>Current Jobs</div>
             <div className="text-2xl font-bold text-blue-600">{stats.current}</div>
           </div>
-          <div className="bg-white rounded-lg shadow-md p-4">
-            <div className="text-sm text-gray-600">Upcoming Jobs</div>
+          <div className={`${darkMode ? 'bg-gradient-to-br from-purple-600 to-purple-800' : 'bg-gradient-to-br from-purple-50 to-purple-100'} rounded-xl shadow-xl p-4 transition-all duration-300 transform hover:scale-110 hover:shadow-2xl hover:rotate-1`}>
+            <div className={`text-sm ${darkMode ? 'text-purple-200' : 'text-gray-600'} transition-colors duration-300`}>Upcoming Jobs</div>
             <div className="text-2xl font-bold text-purple-600">{stats.upcoming}</div>
           </div>
-          <div className="bg-white rounded-lg shadow-md p-4">
-            <div className="text-sm text-gray-600">Pending Jobs</div>
+          <div className={`${darkMode ? 'bg-gradient-to-br from-yellow-600 to-orange-600' : 'bg-gradient-to-br from-yellow-50 to-orange-100'} rounded-xl shadow-xl p-4 transition-all duration-300 transform hover:scale-110 hover:shadow-2xl hover:rotate-1`}>
+            <div className={`text-sm ${darkMode ? 'text-yellow-200' : 'text-gray-600'} transition-colors duration-300`}>Pending Jobs</div>
             <div className="text-2xl font-bold text-yellow-600">{stats.pending}</div>
           </div>
-          <div className="bg-white rounded-lg shadow-md p-4">
-            <div className="text-sm text-gray-600">Completed</div>
+          <div className={`${darkMode ? 'bg-gradient-to-br from-green-600 to-emerald-600' : 'bg-gradient-to-br from-green-50 to-emerald-100'} rounded-xl shadow-xl p-4 transition-all duration-300 transform hover:scale-110 hover:shadow-2xl hover:rotate-1`}>
+            <div className={`text-sm ${darkMode ? 'text-green-200' : 'text-gray-600'} transition-colors duration-300`}>Completed</div>
             <div className="text-2xl font-bold text-green-600">{stats.completed}</div>
           </div>
         </div>
