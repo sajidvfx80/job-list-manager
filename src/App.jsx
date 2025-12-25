@@ -244,11 +244,12 @@ function App() {
         <div className={`${darkMode ? 'bg-gray-800' : 'bg-white'} rounded-xl shadow-xl p-4 mb-6 transition-all duration-300 transform hover:scale-[1.01]`}>
           <div className="flex flex-wrap gap-3 justify-center">
             <button
-              onClick={() => setJobFilter('all')}
+              onClick={() => {
+                setSelectedFilterType('all');
+                setShowJobFilterModal(true);
+              }}
               className={`px-6 py-3 rounded-lg font-semibold transition-all duration-300 transform hover:scale-110 hover:shadow-lg ${
-                jobFilter === 'all'
-                  ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-xl scale-105'
-                  : darkMode
+                darkMode
                   ? 'bg-gray-700 text-gray-200 hover:bg-gray-600'
                   : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
               }`}
@@ -256,11 +257,12 @@ function App() {
               📋 All Jobs
             </button>
             <button
-              onClick={() => setJobFilter('current')}
+              onClick={() => {
+                setSelectedFilterType('current');
+                setShowJobFilterModal(true);
+              }}
               className={`px-6 py-3 rounded-lg font-semibold transition-all duration-300 transform hover:scale-110 hover:shadow-lg ${
-                jobFilter === 'current'
-                  ? 'bg-gradient-to-r from-green-500 to-emerald-600 text-white shadow-xl scale-105'
-                  : darkMode
+                darkMode
                   ? 'bg-gray-700 text-gray-200 hover:bg-gray-600'
                   : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
               }`}
@@ -268,11 +270,12 @@ function App() {
               ⚡ Current Jobs
             </button>
             <button
-              onClick={() => setJobFilter('pending')}
+              onClick={() => {
+                setSelectedFilterType('pending');
+                setShowJobFilterModal(true);
+              }}
               className={`px-6 py-3 rounded-lg font-semibold transition-all duration-300 transform hover:scale-110 hover:shadow-lg ${
-                jobFilter === 'pending'
-                  ? 'bg-gradient-to-r from-yellow-500 to-orange-600 text-white shadow-xl scale-105'
-                  : darkMode
+                darkMode
                   ? 'bg-gray-700 text-gray-200 hover:bg-gray-600'
                   : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
               }`}
@@ -280,11 +283,12 @@ function App() {
               ⏳ Pending Jobs
             </button>
             <button
-              onClick={() => setJobFilter('completed')}
+              onClick={() => {
+                setSelectedFilterType('completed');
+                setShowJobFilterModal(true);
+              }}
               className={`px-6 py-3 rounded-lg font-semibold transition-all duration-300 transform hover:scale-110 hover:shadow-lg ${
-                jobFilter === 'completed'
-                  ? 'bg-gradient-to-r from-purple-500 to-pink-600 text-white shadow-xl scale-105'
-                  : darkMode
+                darkMode
                   ? 'bg-gray-700 text-gray-200 hover:bg-gray-600'
                   : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
               }`}
