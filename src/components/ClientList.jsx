@@ -128,7 +128,8 @@ const ClientList = ({ onClientSelect, selectedClient, refreshKey = 0, onJobUpdat
                       const jobTypeDisplay = getJobTypeDisplay(job);
                       const deliveryDate = job.delivery_date || job.deliveryDate;
                       const assignedTo = job.assigned_to || job.assignedTo;
-                      const isCompleted = job.status === 'completed';
+                      // Jobs in this list are already filtered to be non-completed, so checkbox should be unchecked
+                      const isCompleted = false;
                       
                       const jobTitle = job.job_title || job.jobTitle || '';
                       const jobName = job.job_name || job.jobName || '';
@@ -140,13 +141,16 @@ const ClientList = ({ onClientSelect, selectedClient, refreshKey = 0, onJobUpdat
                           className="flex items-center justify-between p-3 bg-white rounded-md border border-gray-200 hover:shadow-sm"
                         >
                           <div className="flex items-center space-x-3 flex-1">
-                            <input
-                              type="checkbox"
-                              checked={isCompleted}
-                              onChange={(e) => handleCompleteJob(job, e.target.checked)}
-                              className="w-5 h-5 text-green-600 border-gray-300 rounded focus:ring-green-500 cursor-pointer"
-                              title="Mark as completed"
-                            />
+                            <label className="flex items-center cursor-pointer">
+                              <input
+                                type="checkbox"
+                                checked={false}
+                                onChange={(e) => handleCompleteJob(job, e.target.checked)}
+                                className="w-5 h-5 text-green-600 border-gray-300 rounded focus:ring-green-500 cursor-pointer"
+                                title="Mark as completed"
+                              />
+                              <span className="ml-2 text-sm text-gray-700">Completed</span>
+                            </label>
                             <div className="flex-1">
                               <div className="font-medium text-gray-900">
                                 {displayName}
