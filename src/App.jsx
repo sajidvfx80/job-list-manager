@@ -220,6 +220,23 @@ function App() {
       </header>
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Auto-refresh Notification */}
+        {showRefreshNotification && (
+          <div className={`fixed top-20 right-4 z-50 ${darkMode ? 'bg-green-600' : 'bg-green-500'} text-white px-4 py-2 rounded-lg shadow-xl transition-all duration-300 transform animate-slide-in`}>
+            <div className="flex items-center gap-2">
+              <span>🔄</span>
+              <span className="text-sm font-medium">Data refreshed automatically</span>
+            </div>
+          </div>
+        )}
+
+        {/* Last Refresh Time Indicator */}
+        {lastRefreshTime && (
+          <div className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-500'} mb-2 text-right transition-colors duration-300`}>
+            Last auto-refresh: {lastRefreshTime.toLocaleTimeString()}
+          </div>
+        )}
+
         {/* Job Filter Buttons */}
         <div className={`${darkMode ? 'bg-gray-800' : 'bg-white'} rounded-xl shadow-xl p-4 mb-6 transition-all duration-300 transform hover:scale-[1.01]`}>
           <div className="flex flex-wrap gap-3 justify-center">
