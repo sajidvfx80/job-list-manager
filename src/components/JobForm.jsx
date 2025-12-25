@@ -17,7 +17,7 @@ const JobForm = ({ job = null, onSave, onCancel }) => {
     client: '',
     assignedTo: '',
     category: 'current job',
-    jobType: 'SM',
+    jobType: [], // Changed to array for multiple selection
     deliveryDate: '',
     status: 'pending',
     completionStatus: '',
@@ -43,11 +43,23 @@ const JobForm = ({ job = null, onSave, onCancel }) => {
 
   useEffect(() => {
     if (job) {
+      // Handle jobType - could be string (old) or array (new)
+      let jobTypes = [];
+      if (job.job_type || job.jobType) {
+        const jobTypeValue = job.job_type || job.jobType;
+        if (Array.isArray(jobTypeValue)) {
+          jobTypes = jobTypeValue;
+        } else if (typeof jobTypeValue === 'string') {
+          // If it's a comma-separated string, split it
+          jobTypes = jobTypeValue.includes(',') ? jobTypeValue.split(',').map(t => t.trim()) : [jobTypeValue];
+        }
+      }
+      
       setFormData({
         client: job.client || '',
         assignedTo: job.assigned_to || job.assignedTo || '',
         category: job.category || 'current job',
-        jobType: job.job_type || job.jobType || 'SM',
+        jobType: jobTypes.length > 0 ? jobTypes : [],
         deliveryDate: job.delivery_date ? new Date(job.delivery_date).toISOString().split('T')[0] : (job.deliveryDate ? job.deliveryDate.split('T')[0] : ''),
         status: job.status || 'pending',
         completionStatus: job.completion_status || job.completionStatus || '',
@@ -71,10 +83,24 @@ const JobForm = ({ job = null, onSave, onCancel }) => {
     }));
   };
 
+  const handleJobTypeToggle = (jobType) => {
+    setFormData(prev => ({
+      ...prev,
+      jobType: prev.jobType.includes(jobType)
+        ? prev.jobType.filter(t => t !== jobType)
+        : [...prev.jobType, jobType]
+    }));
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!formData.client || !formData.assignedTo || !formData.deliveryDate) {
       alert('Please fill in all required fields');
+      return;
+    }
+
+    if (!formData.jobType || formData.jobType.length === 0) {
+      alert('Please select at least one job type');
       return;
     }
 
@@ -166,26 +192,32 @@ const JobForm = ({ job = null, onSave, onCancel }) => {
               </select>
             </div>
 
-            {/* Job Type */}
+            {/* Job Type - Multiple Selection */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
                 Job Type <span className="text-red-500">*</span>
+                <span className="text-xs text-gray-500 ml-2">(Select multiple if needed)</span>
               </label>
-              <select
-                name="jobType"
-                value={formData.jobType}
-                onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                required
-              >
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                 {JOB_TYPES.map(type => (
-                  <option key={type} value={type}>{type}</option>
+                  <label key={type} className="flex items-center space-x-2 cursor-pointer p-2 border border-gray-300 rounded-md hover:bg-gray-50">
+                    <input
+                      type="checkbox"
+                      checked={formData.jobType.includes(type)}
+                      onChange={() => handleJobTypeToggle(type)}
+                      className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                    />
+                    <span className="text-sm font-medium text-gray-700">{type}</span>
+                  </label>
                 ))}
-              </select>
+              </div>
+              {formData.jobType.length === 0 && (
+                <p className="text-xs text-red-500 mt-1">Please select at least one job type</p>
+              )}
             </div>
 
             {/* LED Deliverables */}
-            {formData.jobType === 'LED' && (
+            {formData.jobType.includes('LED') && (
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   LED Deliverables

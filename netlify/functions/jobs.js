@@ -94,6 +94,14 @@ export const handler = async (event, context) => {
     if (httpMethod === 'POST' && !jobId) {
       const data = JSON.parse(body || '{}');
       
+      // Handle jobType - convert to array if it's a string
+      let jobTypes = [];
+      if (Array.isArray(data.jobType)) {
+        jobTypes = data.jobType;
+      } else if (data.jobType) {
+        jobTypes = [data.jobType];
+      }
+      
       const [job] = await db`
         INSERT INTO jobs (
           client, assigned_to, category, job_type, delivery_date,
@@ -103,7 +111,7 @@ export const handler = async (event, context) => {
           ${data.client},
           ${data.assignedTo},
           ${data.category},
-          ${data.jobType},
+          ${jobTypes},
           ${new Date(data.deliveryDate).toISOString()},
           ${data.status || 'pending'},
           ${data.completionStatus || null},
@@ -124,13 +132,21 @@ export const handler = async (event, context) => {
     if (httpMethod === 'PUT' && jobId) {
       const data = JSON.parse(body || '{}');
 
+      // Handle jobType - convert to array if it's a string
+      let jobTypes = [];
+      if (Array.isArray(data.jobType)) {
+        jobTypes = data.jobType;
+      } else if (data.jobType) {
+        jobTypes = [data.jobType];
+      }
+
       const [job] = await db`
         UPDATE jobs
         SET
           client = ${data.client},
           assigned_to = ${data.assignedTo},
           category = ${data.category},
-          job_type = ${data.jobType},
+          job_type = ${jobTypes},
           delivery_date = ${new Date(data.deliveryDate).toISOString()},
           status = ${data.status || 'pending'},
           completion_status = ${data.completionStatus || null},

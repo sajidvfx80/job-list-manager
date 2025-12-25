@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { initializeStorage, getJobs, getJobsByClient } from './utils/storage';
+import { initializeStorage, getJobs, getJobsByClient, getEmployees } from './utils/storage';
 import ClientList from './components/ClientList';
 import JobList from './components/JobList';
 import JobForm from './components/JobForm';
@@ -9,6 +9,7 @@ import AddClientModal from './components/AddClientModal';
 function App() {
   const [selectedClient, setSelectedClient] = useState(null);
   const [jobs, setJobs] = useState([]);
+  const [employees, setEmployees] = useState([]);
   const [showJobForm, setShowJobForm] = useState(false);
   const [showDateFilter, setShowDateFilter] = useState(false);
   const [showAddClient, setShowAddClient] = useState(false);
@@ -18,9 +19,19 @@ function App() {
     const init = async () => {
       await initializeStorage();
       await loadJobs();
+      await loadEmployees();
     };
     init();
   }, [selectedClient, refreshKey]);
+
+  const loadEmployees = async () => {
+    try {
+      const employeesList = await getEmployees();
+      setEmployees(employeesList);
+    } catch (error) {
+      console.error('Error loading employees:', error);
+    }
+  };
 
   const loadJobs = async () => {
     try {
@@ -60,7 +71,25 @@ function App() {
     };
   };
 
+  const getEmployeeStats = () => {
+    const stats = {};
+    employees.forEach(emp => {
+      const empJobs = jobs.filter(job => {
+        const assignedTo = job.assigned_to || job.assignedTo;
+        return assignedTo === emp;
+      });
+      stats[emp] = {
+        total: empJobs.length,
+        current: empJobs.filter(j => j.category === 'current job').length,
+        pending: empJobs.filter(j => j.category === 'pending jobs' || j.status === 'pending').length,
+        completed: empJobs.filter(j => j.status === 'completed').length
+      };
+    });
+    return stats;
+  };
+
   const stats = getJobStats();
+  const employeeStats = getEmployeeStats();
 
   return (
     <div className="min-h-screen bg-gray-100">
@@ -93,6 +122,40 @@ function App() {
       </header>
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Employee Statistics */}
+        {employees.length > 0 && (
+          <div className="bg-white rounded-lg shadow-md p-6 mb-6">
+            <h2 className="text-xl font-bold mb-4">Employee Job Overview</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {employees.map(emp => {
+                const empStat = employeeStats[emp] || { total: 0, current: 0, pending: 0, completed: 0 };
+                return (
+                  <div key={emp} className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
+                    <div className="flex justify-between items-start mb-3">
+                      <h3 className="text-lg font-semibold text-gray-900">{emp}</h3>
+                      <span className="text-2xl font-bold text-blue-600">{empStat.total}</span>
+                    </div>
+                    <div className="grid grid-cols-3 gap-2 text-sm">
+                      <div>
+                        <div className="text-gray-600">Current</div>
+                        <div className="font-semibold text-blue-600">{empStat.current}</div>
+                      </div>
+                      <div>
+                        <div className="text-gray-600">Pending</div>
+                        <div className="font-semibold text-yellow-600">{empStat.pending}</div>
+                      </div>
+                      <div>
+                        <div className="text-gray-600">Completed</div>
+                        <div className="font-semibold text-green-600">{empStat.completed}</div>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
         {/* Stats Overview */}
         <div className="grid grid-cols-1 md:grid-cols-5 gap-4 mb-6">
           <div className="bg-white rounded-lg shadow-md p-4">

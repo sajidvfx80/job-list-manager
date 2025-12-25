@@ -18,14 +18,21 @@ export const exportJobsToPDF = (jobs, clientName = null, date = null) => {
   
   // Prepare table data
   const tableData = jobs.map(job => {
-    const jobType = job.job_type || job.jobType;
+    const jobTypeValue = job.job_type || job.jobType;
+    const jobTypes = Array.isArray(jobTypeValue) 
+      ? jobTypeValue 
+      : (jobTypeValue ? (typeof jobTypeValue === 'string' && jobTypeValue.includes(',') 
+          ? jobTypeValue.split(',').map(t => t.trim()) 
+          : [jobTypeValue]) 
+        : []);
+    const jobTypeDisplay = jobTypes.length > 0 ? jobTypes.join(', ') : 'N/A';
     const assignedTo = job.assigned_to || job.assignedTo;
     const deliveryDate = job.delivery_date || job.deliveryDate;
     const completionStatus = job.completion_status || job.completionStatus;
     
     return [
       job.client || 'N/A',
-      jobType || 'N/A',
+      jobTypeDisplay,
       job.category || 'N/A',
       assignedTo || 'N/A',
       new Date(deliveryDate).toLocaleDateString(),
@@ -45,9 +52,15 @@ export const exportJobsToPDF = (jobs, clientName = null, date = null) => {
 
   // Add LED deliverables if any
   const ledJobs = jobs.filter(job => {
-    const jobType = job.job_type || job.jobType;
+    const jobTypeValue = job.job_type || job.jobType;
+    const jobTypes = Array.isArray(jobTypeValue) 
+      ? jobTypeValue 
+      : (jobTypeValue ? (typeof jobTypeValue === 'string' && jobTypeValue.includes(',') 
+          ? jobTypeValue.split(',').map(t => t.trim()) 
+          : [jobTypeValue]) 
+        : []);
     const ledDeliverables = job.led_deliverables || job.ledDeliverables;
-    return jobType === 'LED' && ledDeliverables && ledDeliverables.length > 0;
+    return jobTypes.includes('LED') && ledDeliverables && ledDeliverables.length > 0;
   });
   
   if (ledJobs.length > 0) {

@@ -124,10 +124,17 @@ const DateFilterModal = ({ isOpen, onClose, clientName = null }) => {
                     </thead>
                     <tbody className="bg-white divide-y divide-gray-200">
                       {filteredJobs.map(job => {
-                        const jobType = job.job_type || job.jobType;
+                        const jobTypeValue = job.job_type || job.jobType;
+                        const jobTypes = Array.isArray(jobTypeValue) 
+                          ? jobTypeValue 
+                          : (jobTypeValue ? (typeof jobTypeValue === 'string' && jobTypeValue.includes(',') 
+                              ? jobTypeValue.split(',').map(t => t.trim()) 
+                              : [jobTypeValue]) 
+                            : []);
                         const assignedTo = job.assigned_to || job.assignedTo;
                         const completionStatus = job.completion_status || job.completionStatus;
                         const ledDeliverables = job.led_deliverables || job.ledDeliverables;
+                        const hasLED = jobTypes.includes('LED');
                         
                         return (
                           <tr key={job.id} className="hover:bg-gray-50">
@@ -138,10 +145,16 @@ const DateFilterModal = ({ isOpen, onClose, clientName = null }) => {
                               {job.category}
                             </td>
                             <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900">
-                              {jobType}
-                              {jobType === 'LED' && ledDeliverables && ledDeliverables.length > 0 && (
-                                <div className="text-xs text-gray-500">
-                                  {ledDeliverables.join(', ')}
+                              <div className="flex flex-wrap gap-1">
+                                {jobTypes.map((type, idx) => (
+                                  <span key={idx} className="px-2 py-1 text-xs font-semibold rounded bg-blue-100 text-blue-800">
+                                    {type}
+                                  </span>
+                                ))}
+                              </div>
+                              {hasLED && ledDeliverables && ledDeliverables.length > 0 && (
+                                <div className="text-xs text-gray-500 mt-1">
+                                  LED: {ledDeliverables.join(', ')}
                                 </div>
                               )}
                             </td>

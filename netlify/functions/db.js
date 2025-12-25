@@ -39,7 +39,7 @@ export const initDatabase = async () => {
       client VARCHAR(255) NOT NULL,
       assigned_to VARCHAR(255) NOT NULL,
       category VARCHAR(50) NOT NULL,
-      job_type VARCHAR(50) NOT NULL,
+      job_type TEXT[],  -- Changed to TEXT[] to support multiple job types
       delivery_date TIMESTAMP NOT NULL,
       status VARCHAR(50) DEFAULT 'pending',
       completion_status VARCHAR(50),
