@@ -116,7 +116,7 @@ const JobForm = ({ job = null, onSave, onCancel }) => {
       category: formData.category || 'current job',
       deliveryDate: formData.deliveryDate 
         ? new Date(formData.deliveryDate).toISOString()
-        : new Date().toISOString(), // Default to today if not set
+        : null, // Allow null for "Not Specified"
       status: formData.status || 'pending',
     };
 
@@ -261,7 +261,7 @@ const JobForm = ({ job = null, onSave, onCancel }) => {
             {/* Delivery Date */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Delivery Date <span className="text-red-500">*</span>
+                Delivery Date <span className="text-gray-500 text-xs">(Optional - leave empty for "Not Specified")</span>
               </label>
               <input
                 type="date"

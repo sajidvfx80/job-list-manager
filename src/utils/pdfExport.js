@@ -45,7 +45,7 @@ export const exportJobsToPDF = (jobs, clientName = null, date = null) => {
       jobTypeDisplay,
       job.category || 'N/A',
       assignedTo || 'N/A',
-      new Date(deliveryDate).toLocaleDateString(),
+      deliveryDate ? new Date(deliveryDate).toLocaleDateString() : 'Not Specified',
       job.status || 'Pending',
       completionStatus || '-'
     ];

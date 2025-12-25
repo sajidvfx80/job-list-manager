@@ -155,7 +155,7 @@ const JobList = ({ jobs, onUpdate, onDelete, clientName = null }) => {
                       {assignedTo}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {format(new Date(deliveryDate), 'MMM dd, yyyy')}
+                      {deliveryDate ? format(new Date(deliveryDate), 'MMM dd, yyyy') : 'Not Specified'}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <span className={`px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(job.status)}`}>

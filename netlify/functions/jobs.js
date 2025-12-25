@@ -130,16 +130,16 @@ export const handler = async (event, context) => {
         jobTypes = ['SM'];
       }
       
-      // Handle delivery date - default to today if not provided
-      let deliveryDate;
+      // Handle delivery date - allow null for "Not Specified"
+      let deliveryDate = null;
       try {
         if (data.deliveryDate) {
           deliveryDate = new Date(data.deliveryDate).toISOString();
-        } else {
-          deliveryDate = new Date().toISOString();
         }
+        // If not provided, leave as null (will be stored as NULL in database)
       } catch (dateError) {
-        deliveryDate = new Date().toISOString();
+        // If date parsing fails, leave as null
+        deliveryDate = null;
       }
       
       try {

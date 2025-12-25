@@ -189,7 +189,7 @@ const ClientList = ({ onClientSelect, selectedClient, refreshKey = 0, onJobUpdat
                             )}
                             <div className={`text-xs mb-1 ${darkMode ? 'text-gray-300' : 'text-gray-600'} transition-colors duration-300`}>
                               <div>Assigned: {assignedTo}</div>
-                              <div>Delivery: {format(new Date(deliveryDate), 'MMM dd, yyyy')}</div>
+                              <div>Delivery: {deliveryDate ? format(new Date(deliveryDate), 'MMM dd, yyyy') : 'Not Specified'}</div>
                             </div>
                             {job.description && (
                               <div className="text-xs text-gray-500 mt-1 line-clamp-2">{job.description}</div>
