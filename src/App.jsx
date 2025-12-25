@@ -21,6 +21,8 @@ function App() {
   const [showEmployeeModal, setShowEmployeeModal] = useState(false);
   const [showPDFExport, setShowPDFExport] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
+  const [lastRefreshTime, setLastRefreshTime] = useState(null);
+  const [showRefreshNotification, setShowRefreshNotification] = useState(false);
   const [jobFilter, setJobFilter] = useState('all'); // 'all', 'completed', 'current', 'pending'
   const [darkMode, setDarkMode] = useState(false);
 
