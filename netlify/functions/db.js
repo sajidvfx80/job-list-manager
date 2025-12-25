@@ -46,6 +46,7 @@ export const initDatabase = async () => {
         client VARCHAR(255) NOT NULL,
         assigned_to VARCHAR(255) NOT NULL,
         category VARCHAR(50) NOT NULL,
+        job_title VARCHAR(255),
         job_name VARCHAR(255),
         job_type TEXT[],
         delivery_date TIMESTAMP NOT NULL,
@@ -57,6 +58,23 @@ export const initDatabase = async () => {
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       )
     `;
+    
+    // Add job_title column if it doesn't exist (for existing databases)
+    try {
+      await db`
+        DO $$ 
+        BEGIN 
+          IF NOT EXISTS (
+            SELECT 1 FROM information_schema.columns 
+            WHERE table_name = 'jobs' AND column_name = 'job_title'
+          ) THEN
+            ALTER TABLE jobs ADD COLUMN job_title VARCHAR(255);
+          END IF;
+        END $$;
+      `;
+    } catch (alterError) {
+      console.log('Column job_title might already exist:', alterError.message);
+    }
     
     // Add job_name column if it doesn't exist (for existing databases)
     try {
@@ -72,7 +90,6 @@ export const initDatabase = async () => {
         END $$;
       `;
     } catch (alterError) {
-      // Column might already exist, ignore error
       console.log('Column job_name might already exist:', alterError.message);
     }
 
