@@ -9,7 +9,7 @@ const LED_DELIVERABLES = [
   'Waterfront Indoor 7 Screens'
 ];
 
-const JOB_TYPES = ['SM', 'LED', 'PMax', 'Branches'];
+const JOB_TYPES = ['SM', 'LED', 'PMax', 'Branches', 'TikTok'];
 const CATEGORIES = ['current job', 'upcoming job', 'pending jobs'];
 
 const JobForm = ({ job = null, onSave, onCancel }) => {
