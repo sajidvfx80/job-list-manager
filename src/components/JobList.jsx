@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { format } from 'date-fns';
 import JobForm from './JobForm';
 
-const JobList = ({ jobs, onUpdate, clientName = null }) => {
+const JobList = ({ jobs, onUpdate, onDelete, clientName = null }) => {
   const [editingJob, setEditingJob] = useState(null);
   const [showForm, setShowForm] = useState(false);
 
@@ -164,12 +164,20 @@ const JobList = ({ jobs, onUpdate, clientName = null }) => {
                       {completionStatus || '-'}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                      <button
-                        onClick={() => handleEdit(job)}
-                        className="text-blue-600 hover:text-blue-900"
-                      >
-                        Edit
-                      </button>
+                      <div className="flex gap-3">
+                        <button
+                          onClick={() => handleEdit(job)}
+                          className="text-blue-600 hover:text-blue-900"
+                        >
+                          Edit
+                        </button>
+                        <button
+                          onClick={() => onDelete && onDelete(job.id)}
+                          className="text-red-600 hover:text-red-900"
+                        >
+                          Delete
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 );

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { initializeStorage, getJobs, getJobsByClient, getEmployees } from './utils/storage';
+import { initializeStorage, getJobs, getJobsByClient, getEmployees, deleteJob } from './utils/storage';
 import ClientList from './components/ClientList';
 import JobList from './components/JobList';
 import JobForm from './components/JobForm';
@@ -8,6 +8,7 @@ import AddClientModal from './components/AddClientModal';
 
 function App() {
   const [selectedClient, setSelectedClient] = useState(null);
+  const [selectedEmployee, setSelectedEmployee] = useState(null);
   const [jobs, setJobs] = useState([]);
   const [employees, setEmployees] = useState([]);
   const [showJobForm, setShowJobForm] = useState(false);
@@ -22,7 +23,7 @@ function App() {
       await loadEmployees();
     };
     init();
-  }, [selectedClient, refreshKey]);
+  }, [selectedClient, selectedEmployee, refreshKey]);
 
   const loadEmployees = async () => {
     try {
@@ -35,15 +36,23 @@ function App() {
 
   const loadJobs = async () => {
     try {
+      let allJobs = [];
       if (selectedClient) {
-        const clientJobs = await getJobsByClient(selectedClient);
-        // Show all jobs in the full list (including completed)
-        setJobs(clientJobs);
+        allJobs = await getJobsByClient(selectedClient);
       } else {
-        const allJobs = await getJobs();
-        // Show all jobs in the full list (including completed)
-        setJobs(allJobs);
+        allJobs = await getJobs();
       }
+      
+      // Filter by employee if selected
+      if (selectedEmployee) {
+        allJobs = allJobs.filter(job => {
+          const assignedTo = job.assigned_to || job.assignedTo;
+          return assignedTo === selectedEmployee;
+        });
+      }
+      
+      // Show all jobs in the full list (including completed)
+      setJobs(allJobs);
     } catch (error) {
       console.error('Error loading jobs:', error);
       setJobs([]);
@@ -52,6 +61,23 @@ function App() {
 
   const handleClientSelect = (client) => {
     setSelectedClient(client === selectedClient ? null : client);
+  };
+
+  const handleEmployeeSelect = (employee) => {
+    setSelectedEmployee(employee === selectedEmployee ? null : employee);
+  };
+
+  const handleJobDelete = async (jobId) => {
+    if (window.confirm('Are you sure you want to delete this job? This action cannot be undone.')) {
+      try {
+        await deleteJob(jobId);
+        setRefreshKey(prev => prev + 1);
+        await loadJobs();
+      } catch (error) {
+        console.error('Error deleting job:', error);
+        alert('Failed to delete job. Please try again.');
+      }
+    }
   };
 
   const handleJobAdded = () => {
@@ -126,15 +152,34 @@ function App() {
       </header>
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Employee Statistics */}
+        {/* Employee Statistics - Clickable to Filter */}
         {employees.length > 0 && (
           <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-            <h2 className="text-xl font-bold mb-4">Employee Job Overview</h2>
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-xl font-bold">Employee Job Overview</h2>
+              {selectedEmployee && (
+                <button
+                  onClick={() => handleEmployeeSelect(null)}
+                  className="px-3 py-1 text-sm bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300"
+                >
+                  Clear Filter
+                </button>
+              )}
+            </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {employees.map(emp => {
                 const empStat = employeeStats[emp] || { total: 0, current: 0, pending: 0, completed: 0 };
+                const isSelected = selectedEmployee === emp;
                 return (
-                  <div key={emp} className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
+                  <button
+                    key={emp}
+                    onClick={() => handleEmployeeSelect(emp)}
+                    className={`border-2 rounded-lg p-4 hover:shadow-md transition-all text-left ${
+                      isSelected
+                        ? 'border-blue-600 bg-blue-50 shadow-md'
+                        : 'border-gray-200 hover:border-blue-300'
+                    }`}
+                  >
                     <div className="flex justify-between items-start mb-3">
                       <h3 className="text-lg font-semibold text-gray-900">{emp}</h3>
                       <span className="text-2xl font-bold text-blue-600">{empStat.total}</span>
@@ -153,7 +198,7 @@ function App() {
                         <div className="font-semibold text-green-600">{empStat.completed}</div>
                       </div>
                     </div>
-                  </div>
+                  </button>
                 );
               })}
             </div>
@@ -190,26 +235,42 @@ function App() {
           selectedClient={selectedClient}
           refreshKey={refreshKey}
           onJobUpdate={loadJobs}
+          onJobDelete={handleJobDelete}
         />
 
-        {/* Selected Client Info */}
-        {selectedClient && (
+        {/* Selected Client/Employee Info */}
+        {(selectedClient || selectedEmployee) && (
           <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
             <div className="flex justify-between items-center">
               <div>
                 <h2 className="text-xl font-bold text-blue-900">
-                  Viewing Jobs for: {selectedClient}
+                  {selectedClient && `Viewing Jobs for: ${selectedClient}`}
+                  {selectedClient && selectedEmployee && ' | '}
+                  {selectedEmployee && `Employee: ${selectedEmployee}`}
+                  {!selectedClient && selectedEmployee && `Viewing Jobs for: ${selectedEmployee}`}
                 </h2>
                 <p className="text-sm text-blue-700 mt-1">
                   {jobs.length} job(s) found
                 </p>
               </div>
-              <button
-                onClick={() => setSelectedClient(null)}
-                className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
-              >
-                View All Jobs
-              </button>
+              <div className="flex gap-2">
+                {selectedEmployee && (
+                  <button
+                    onClick={() => handleEmployeeSelect(null)}
+                    className="px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700"
+                  >
+                    Clear Employee Filter
+                  </button>
+                )}
+                {selectedClient && (
+                  <button
+                    onClick={() => setSelectedClient(null)}
+                    className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+                  >
+                    View All Jobs
+                  </button>
+                )}
+              </div>
             </div>
           </div>
         )}
@@ -218,6 +279,7 @@ function App() {
         <JobList
           jobs={jobs}
           onUpdate={loadJobs}
+          onDelete={handleJobDelete}
           clientName={selectedClient}
         />
       </main>

@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { getClients, getJobsByClient, saveJob } from '../utils/storage';
 import { format } from 'date-fns';
 
-const ClientList = ({ onClientSelect, selectedClient, refreshKey = 0, onJobUpdate }) => {
+const ClientList = ({ onClientSelect, selectedClient, refreshKey = 0, onJobUpdate, onJobDelete }) => {
   const [clients, setClients] = useState([]);
   const [clientStats, setClientStats] = useState({});
   const [clientJobs, setClientJobs] = useState({});
@@ -120,10 +120,10 @@ const ClientList = ({ onClientSelect, selectedClient, refreshKey = 0, onJobUpdat
                 </button>
               </div>
 
-              {/* Jobs List - Always Visible */}
+              {/* Jobs List - Always Visible in Grid Layout */}
               {jobs.length > 0 && (
                 <div className="border-t border-gray-200 p-4 bg-gray-50">
-                  <div className="space-y-2">
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
                     {jobs.map(job => {
                       const jobTypeDisplay = getJobTypeDisplay(job);
                       const deliveryDate = job.delivery_date || job.deliveryDate;
@@ -138,40 +138,48 @@ const ClientList = ({ onClientSelect, selectedClient, refreshKey = 0, onJobUpdat
                       return (
                         <div
                           key={job.id}
-                          className="flex items-center justify-between p-3 bg-white rounded-md border border-gray-200 hover:shadow-sm"
+                          className="flex flex-col p-3 bg-white rounded-md border border-gray-200 hover:shadow-md transition-shadow"
                         >
-                          <div className="flex items-center space-x-3 flex-1">
+                          <div className="flex items-start justify-between mb-2">
                             <label className="flex items-center cursor-pointer">
                               <input
                                 type="checkbox"
                                 checked={false}
                                 onChange={(e) => handleCompleteJob(job, e.target.checked)}
-                                className="w-5 h-5 text-green-600 border-gray-300 rounded focus:ring-green-500 cursor-pointer"
+                                className="w-4 h-4 text-green-600 border-gray-300 rounded focus:ring-green-500 cursor-pointer"
                                 title="Mark as completed"
                               />
-                              <span className="ml-2 text-sm text-gray-700">Completed</span>
+                              <span className="ml-2 text-xs text-gray-700">Completed</span>
                             </label>
-                            <div className="flex-1">
-                              <div className="font-medium text-gray-900">
-                                {displayName}
-                              </div>
-                              {jobTitle && jobName && (
-                                <div className="text-sm text-gray-600 mt-1">
-                                  {jobName}
-                                </div>
-                              )}
-                              {jobTypeDisplay && displayName !== jobTypeDisplay && (
-                                <div className="text-sm text-gray-600 mt-1">
-                                  Type: {jobTypeDisplay}
-                                </div>
-                              )}
-                              <div className="text-sm text-gray-600 mt-1">
-                                Assigned to: {assignedTo} | Delivery: {format(new Date(deliveryDate), 'MMM dd, yyyy')}
-                              </div>
-                              {job.description && (
-                                <div className="text-xs text-gray-500 mt-1">{job.description}</div>
-                              )}
+                            <button
+                              onClick={() => onJobDelete && onJobDelete(job.id)}
+                              className="text-red-600 hover:text-red-800 text-sm font-medium"
+                              title="Delete job"
+                            >
+                              ✕
+                            </button>
+                          </div>
+                          <div className="flex-1">
+                            <div className="font-medium text-gray-900 text-sm mb-1">
+                              {displayName}
                             </div>
+                            {jobTitle && jobName && (
+                              <div className="text-xs text-gray-600 mb-1">
+                                {jobName}
+                              </div>
+                            )}
+                            {jobTypeDisplay && displayName !== jobTypeDisplay && (
+                              <div className="text-xs text-gray-600 mb-1">
+                                Type: {jobTypeDisplay}
+                              </div>
+                            )}
+                            <div className="text-xs text-gray-600 mb-1">
+                              <div>Assigned: {assignedTo}</div>
+                              <div>Delivery: {format(new Date(deliveryDate), 'MMM dd, yyyy')}</div>
+                            </div>
+                            {job.description && (
+                              <div className="text-xs text-gray-500 mt-1 line-clamp-2">{job.description}</div>
+                            )}
                           </div>
                         </div>
                       );
