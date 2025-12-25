@@ -145,13 +145,14 @@ export const handler = async (event, context) => {
       try {
         const [job] = await db`
           INSERT INTO jobs (
-            client, assigned_to, category, job_name, job_type, delivery_date,
+            client, assigned_to, category, job_title, job_name, job_type, delivery_date,
             status, completion_status, led_deliverables, description
           )
           VALUES (
             ${data.client},
             ${data.assignedTo},
             ${data.category || 'current job'},
+            ${data.jobTitle || null},
             ${data.jobName || 'Untitled Job'},
             ${jobTypes},
             ${deliveryDate},
@@ -209,6 +210,7 @@ export const handler = async (event, context) => {
           client = ${data.client},
           assigned_to = ${data.assignedTo},
           category = ${data.category || 'current job'},
+          job_title = ${data.jobTitle || null},
           job_name = ${data.jobName || 'Untitled Job'},
           job_type = ${jobTypes},
           delivery_date = ${deliveryDate},

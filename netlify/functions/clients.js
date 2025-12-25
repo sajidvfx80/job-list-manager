@@ -22,7 +22,13 @@ export const handler = async (event, context) => {
     // GET /api/clients - Get all clients
     if (event.httpMethod === 'GET') {
       const clients = await db`
-        SELECT name FROM clients ORDER BY name ASC
+        SELECT name FROM clients ORDER BY 
+          CASE 
+            WHEN name = 'stc' THEN 1
+            WHEN name = 'CBK' THEN 2
+            ELSE 3
+          END,
+          name ASC
       `;
 
       return {

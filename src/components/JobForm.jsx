@@ -17,6 +17,7 @@ const JobForm = ({ job = null, onSave, onCancel }) => {
     client: '',
     assignedTo: '',
     category: 'current job',
+    jobTitle: '',
     jobName: '',
     jobType: [], // Changed to array for multiple selection
     deliveryDate: '',
@@ -60,6 +61,7 @@ const JobForm = ({ job = null, onSave, onCancel }) => {
         client: job.client || '',
         assignedTo: job.assigned_to || job.assignedTo || '',
         category: job.category || 'current job',
+        jobTitle: job.job_title || job.jobTitle || '',
         jobName: job.job_name || job.jobName || '',
         jobType: jobTypes.length > 0 ? jobTypes : [],
         deliveryDate: job.delivery_date ? new Date(job.delivery_date).toISOString().split('T')[0] : (job.deliveryDate ? job.deliveryDate.split('T')[0] : ''),
@@ -107,6 +109,7 @@ const JobForm = ({ job = null, onSave, onCancel }) => {
     const jobToSave = {
       ...formData,
       id: job?.id,
+      jobTitle: formData.jobTitle || '',
       jobName: formData.jobName || 'Untitled Job',
       jobType: formData.jobType && formData.jobType.length > 0 ? formData.jobType : ['SM'],
       category: formData.category || 'current job',

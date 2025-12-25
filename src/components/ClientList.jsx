@@ -146,7 +146,9 @@ const ClientList = ({ onClientSelect, selectedClient, refreshKey = 0, onJobUpdat
                       const deliveryDate = job.delivery_date || job.deliveryDate;
                       const assignedTo = job.assigned_to || job.assignedTo;
                       
-                      const jobName = job.job_name || job.jobName || jobTypeDisplay || 'N/A';
+                      const jobTitle = job.job_title || job.jobTitle || '';
+                      const jobName = job.job_name || job.jobName || '';
+                      const displayName = jobTitle || jobName || jobTypeDisplay || 'N/A';
                       
                       return (
                         <div
@@ -155,9 +157,14 @@ const ClientList = ({ onClientSelect, selectedClient, refreshKey = 0, onJobUpdat
                         >
                           <div className="flex-1">
                             <div className="font-medium text-gray-900">
-                              {jobName}
+                              {displayName}
                             </div>
-                            {jobTypeDisplay && jobName !== jobTypeDisplay && (
+                            {jobTitle && jobName && (
+                              <div className="text-sm text-gray-600 mt-1">
+                                {jobName}
+                              </div>
+                            )}
+                            {jobTypeDisplay && displayName !== jobTypeDisplay && (
                               <div className="text-sm text-gray-600 mt-1">
                                 Type: {jobTypeDisplay}
                               </div>

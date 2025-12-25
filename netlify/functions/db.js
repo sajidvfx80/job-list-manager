@@ -76,15 +76,18 @@ export const initDatabase = async () => {
       console.log('Column job_name might already exist:', alterError.message);
     }
 
-  // Insert default clients if they don't exist
-  const defaultClients = ['stc', 'CBK', 'BK', 'PH', 'solutions', 'Subway'];
-  for (const clientName of defaultClients) {
-    await db`
-      INSERT INTO clients (name)
-      VALUES (${clientName})
-      ON CONFLICT (name) DO NOTHING
-    `;
-  }
+    // Insert default clients if they don't exist (stc first, then CBK, then others)
+    const defaultClients = ['stc', 'CBK', 'BK', 'PH', 'solutions', 'Subway'];
+    for (const clientName of defaultClients) {
+      await db`
+        INSERT INTO clients (name)
+        VALUES (${clientName})
+        ON CONFLICT (name) DO NOTHING
+      `;
+    }
+    
+    // Reorder clients: stc first, CBK second
+    // This is done by updating the order in the SELECT query, not by reordering in database
 
     // Insert default employees if they don't exist
     const defaultEmployees = ['Mijoy', 'Sajid'];

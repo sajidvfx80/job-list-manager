@@ -71,6 +71,9 @@ const JobList = ({ jobs, onUpdate, clientName = null }) => {
                   Client
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Job Title
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Job Name
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -113,12 +116,16 @@ const JobList = ({ jobs, onUpdate, clientName = null }) => {
                 const ledDeliverables = job.led_deliverables || job.ledDeliverables;
                 const hasLED = jobTypes.includes('LED');
                 
+                const jobTitle = job.job_title || job.jobTitle || '-';
                 const jobName = job.job_name || job.jobName || '-';
                 
                 return (
                   <tr key={job.id} className="hover:bg-gray-50">
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                       {job.client}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      {jobTitle}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                       {jobName}
