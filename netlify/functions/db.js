@@ -92,6 +92,23 @@ export const initDatabase = async () => {
     } catch (alterError) {
       console.log('Column job_name might already exist:', alterError.message);
     }
+    
+    // Update delivery_date column to allow NULL (for existing databases)
+    try {
+      await db`
+        DO $$ 
+        BEGIN 
+          IF EXISTS (
+            SELECT 1 FROM information_schema.columns 
+            WHERE table_name = 'jobs' AND column_name = 'delivery_date' AND is_nullable = 'NO'
+          ) THEN
+            ALTER TABLE jobs ALTER COLUMN delivery_date DROP NOT NULL;
+          END IF;
+        END $$;
+      `;
+    } catch (alterError) {
+      console.log('Could not update delivery_date column:', alterError.message);
+    }
 
     // Insert default clients if they don't exist (stc first, then CBK, then others)
     const defaultClients = ['stc', 'CBK', 'BK', 'solutions', 'PH', 'Subway'];
