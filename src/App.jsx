@@ -37,9 +37,11 @@ function App() {
     try {
       if (selectedClient) {
         const clientJobs = await getJobsByClient(selectedClient);
+        // Show all jobs in the full list (including completed)
         setJobs(clientJobs);
       } else {
         const allJobs = await getJobs();
+        // Show all jobs in the full list (including completed)
         setJobs(allJobs);
       }
     } catch (error) {
@@ -185,6 +187,7 @@ function App() {
           onClientSelect={handleClientSelect}
           selectedClient={selectedClient}
           refreshKey={refreshKey}
+          onJobUpdate={loadJobs}
         />
 
         {/* Selected Client Info */}
