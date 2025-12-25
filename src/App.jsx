@@ -5,15 +5,20 @@ import JobList from './components/JobList';
 import JobForm from './components/JobForm';
 import DateFilterModal from './components/DateFilterModal';
 import AddClientModal from './components/AddClientModal';
+import EmployeeJobsModal from './components/EmployeeJobsModal';
+import PDFExportModal from './components/PDFExportModal';
 
 function App() {
   const [selectedClient, setSelectedClient] = useState(null);
   const [selectedEmployee, setSelectedEmployee] = useState(null);
+  const [selectedEmployeeForModal, setSelectedEmployeeForModal] = useState(null);
   const [jobs, setJobs] = useState([]);
   const [employees, setEmployees] = useState([]);
   const [showJobForm, setShowJobForm] = useState(false);
   const [showDateFilter, setShowDateFilter] = useState(false);
   const [showAddClient, setShowAddClient] = useState(false);
+  const [showEmployeeModal, setShowEmployeeModal] = useState(false);
+  const [showPDFExport, setShowPDFExport] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
 
   useEffect(() => {
@@ -23,7 +28,7 @@ function App() {
       await loadEmployees();
     };
     init();
-  }, [selectedClient, selectedEmployee, refreshKey]);
+  }, [selectedClient, refreshKey]);
 
   const loadEmployees = async () => {
     try {
@@ -43,14 +48,6 @@ function App() {
         allJobs = await getJobs();
       }
       
-      // Filter by employee if selected
-      if (selectedEmployee) {
-        allJobs = allJobs.filter(job => {
-          const assignedTo = job.assigned_to || job.assignedTo;
-          return assignedTo === selectedEmployee;
-        });
-      }
-      
       // Show all jobs in the full list (including completed)
       setJobs(allJobs);
     } catch (error) {
@@ -64,7 +61,8 @@ function App() {
   };
 
   const handleEmployeeSelect = (employee) => {
-    setSelectedEmployee(employee === selectedEmployee ? null : employee);
+    setSelectedEmployeeForModal(employee);
+    setShowEmployeeModal(true);
   };
 
   const handleJobDelete = async (jobId) => {
@@ -152,33 +150,20 @@ function App() {
       </header>
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Employee Statistics - Clickable to Filter */}
+        {/* Employee Statistics - Clickable to View Jobs */}
         {employees.length > 0 && (
           <div className="bg-white rounded-lg shadow-md p-6 mb-6">
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-xl font-bold">Employee Job Overview</h2>
-              {selectedEmployee && (
-                <button
-                  onClick={() => handleEmployeeSelect(null)}
-                  className="px-3 py-1 text-sm bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300"
-                >
-                  Clear Filter
-                </button>
-              )}
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {employees.map(emp => {
                 const empStat = employeeStats[emp] || { total: 0, current: 0, pending: 0, completed: 0 };
-                const isSelected = selectedEmployee === emp;
                 return (
                   <button
                     key={emp}
                     onClick={() => handleEmployeeSelect(emp)}
-                    className={`border-2 rounded-lg p-4 hover:shadow-md transition-all text-left ${
-                      isSelected
-                        ? 'border-blue-600 bg-blue-50 shadow-md'
-                        : 'border-gray-200 hover:border-blue-300'
-                    }`}
+                    className="border-2 border-gray-200 rounded-lg p-4 hover:shadow-md hover:border-blue-300 transition-all text-left"
                   >
                     <div className="flex justify-between items-start mb-3">
                       <h3 className="text-lg font-semibold text-gray-900">{emp}</h3>
@@ -197,6 +182,9 @@ function App() {
                         <div className="text-gray-600">Completed</div>
                         <div className="font-semibold text-green-600">{empStat.completed}</div>
                       </div>
+                    </div>
+                    <div className="mt-3 text-xs text-blue-600 font-medium">
+                      Click to view jobs →
                     </div>
                   </button>
                 );
@@ -238,38 +226,32 @@ function App() {
           onJobDelete={handleJobDelete}
         />
 
-        {/* Selected Client/Employee Info */}
-        {(selectedClient || selectedEmployee) && (
+        {/* Selected Client Info */}
+        {selectedClient && (
           <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
             <div className="flex justify-between items-center">
               <div>
                 <h2 className="text-xl font-bold text-blue-900">
-                  {selectedClient && `Viewing Jobs for: ${selectedClient}`}
-                  {selectedClient && selectedEmployee && ' | '}
-                  {selectedEmployee && `Employee: ${selectedEmployee}`}
-                  {!selectedClient && selectedEmployee && `Viewing Jobs for: ${selectedEmployee}`}
+                  Viewing Jobs for: {selectedClient}
                 </h2>
                 <p className="text-sm text-blue-700 mt-1">
                   {jobs.length} job(s) found
                 </p>
               </div>
               <div className="flex gap-2">
-                {selectedEmployee && (
-                  <button
-                    onClick={() => handleEmployeeSelect(null)}
-                    className="px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700"
-                  >
-                    Clear Employee Filter
-                  </button>
-                )}
-                {selectedClient && (
-                  <button
-                    onClick={() => setSelectedClient(null)}
-                    className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
-                  >
-                    View All Jobs
-                  </button>
-                )}
+                <button
+                  onClick={() => setShowPDFExport(true)}
+                  className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 flex items-center gap-2"
+                  title="Export to PDF"
+                >
+                  📄 Export PDF
+                </button>
+                <button
+                  onClick={() => setSelectedClient(null)}
+                  className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+                >
+                  View All Jobs
+                </button>
               </div>
             </div>
           </div>
@@ -305,6 +287,25 @@ function App() {
           isOpen={showAddClient}
           onClose={() => setShowAddClient(false)}
           onClientAdded={handleClientAdded}
+        />
+      )}
+
+      {showEmployeeModal && (
+        <EmployeeJobsModal
+          isOpen={showEmployeeModal}
+          onClose={() => {
+            setShowEmployeeModal(false);
+            setSelectedEmployeeForModal(null);
+          }}
+          employeeName={selectedEmployeeForModal}
+          onDelete={handleJobDelete}
+        />
+      )}
+
+      {showPDFExport && (
+        <PDFExportModal
+          isOpen={showPDFExport}
+          onClose={() => setShowPDFExport(false)}
         />
       )}
     </div>

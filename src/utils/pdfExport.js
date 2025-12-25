@@ -10,7 +10,12 @@ export const exportJobsToPDF = (jobs, clientName = null, date = null) => {
     title = `${clientName} - Job List`;
   }
   if (date) {
-    title += ` - ${new Date(date).toLocaleDateString()}`;
+    // Handle date range (format: "YYYY-MM-DD to YYYY-MM-DD") or single date
+    if (date.includes(' to ')) {
+      title += ` - ${date}`;
+    } else {
+      title += ` - ${new Date(date).toLocaleDateString()}`;
+    }
   }
   
   doc.setFontSize(18);
@@ -92,7 +97,13 @@ export const exportJobsToPDF = (jobs, clientName = null, date = null) => {
     filename = `${clientName.toLowerCase().replace(/\s+/g, '-')}-jobs`;
   }
   if (date) {
-    filename += `-${new Date(date).toISOString().split('T')[0]}`;
+    // Handle date range or single date
+    if (date.includes(' to ')) {
+      const [start, end] = date.split(' to ');
+      filename += `-${start}-to-${end}`;
+    } else {
+      filename += `-${new Date(date).toISOString().split('T')[0]}`;
+    }
   }
   filename += '.pdf';
 
