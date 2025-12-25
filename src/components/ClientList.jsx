@@ -116,7 +116,7 @@ const ClientList = ({ onClientSelect, selectedClient, refreshKey = 0, onJobUpdat
                   onClick={() => onClientSelect(client)}
                   className="w-full text-left transition-transform duration-300 hover:scale-105"
                 >
-                  <div className={`font-semibold text-lg mb-1 ${darkMode ? 'text-white' : 'text-gray-900'} transition-colors duration-300`}>{client}</div>
+                  <div className={`font-bold text-xl mb-1 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent transition-colors duration-300`}>{client}</div>
                   <div className={`text-sm ${darkMode ? 'text-gray-300' : 'text-gray-600'} transition-colors duration-300`}>
                     <div>Total: {stats.total} | Active: {stats.active}</div>
                     <div className="text-orange-600">Pending: {stats.pending}</div>
@@ -159,14 +159,14 @@ const ClientList = ({ onClientSelect, selectedClient, refreshKey = 0, onJobUpdat
                             <div className="flex gap-2">
                               <button
                                 onClick={() => onJobEdit && onJobEdit(job)}
-                                className="px-2 py-1 text-xs bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
+                                className="px-2 py-1 text-xs text-gray-600 hover:text-gray-800 rounded hover:bg-gray-100 transition-colors"
                                 title="Edit job"
                               >
                                 ✏️ Edit
                               </button>
                               <button
                                 onClick={() => onJobDelete && onJobDelete(job.id)}
-                                className="px-2 py-1 text-xs bg-red-500 text-white rounded hover:bg-red-600 transition-colors"
+                                className="px-2 py-1 text-xs text-gray-600 hover:text-gray-800 rounded hover:bg-gray-100 transition-colors"
                                 title="Delete job"
                               >
                                 ✕ Delete
@@ -174,7 +174,7 @@ const ClientList = ({ onClientSelect, selectedClient, refreshKey = 0, onJobUpdat
                             </div>
                           </div>
                           <div className="flex-1">
-                            <div className={`font-medium text-sm mb-1 ${darkMode ? 'text-white' : 'text-gray-900'} transition-colors duration-300`}>
+                            <div className={`font-bold text-base mb-1 bg-gradient-to-r from-indigo-600 to-pink-600 bg-clip-text text-transparent transition-colors duration-300`}>
                               {displayName}
                             </div>
                             {jobTitle && jobName && (
@@ -189,7 +189,7 @@ const ClientList = ({ onClientSelect, selectedClient, refreshKey = 0, onJobUpdat
                             )}
                             <div className={`text-xs mb-1 ${darkMode ? 'text-gray-300' : 'text-gray-600'} transition-colors duration-300`}>
                               <div>Assigned: {assignedTo}</div>
-                              <div>Delivery: {deliveryDate ? format(new Date(deliveryDate), 'MMM dd, yyyy') : 'Not Specified'}</div>
+                              <div className="font-bold text-orange-600">Delivery: {deliveryDate ? format(new Date(deliveryDate), 'MMM dd, yyyy') : 'Not Specified'}</div>
                             </div>
                             {job.description && (
                               <div className="text-xs text-gray-500 mt-1 line-clamp-2">{job.description}</div>

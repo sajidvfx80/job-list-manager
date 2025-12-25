@@ -123,11 +123,11 @@ const JobList = ({ jobs, onUpdate, onDelete, clientName = null }) => {
                 
                 return (
                   <tr key={job.id} className="hover:bg-gray-50">
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                      {job.client}
+                    <td className="px-6 py-4 whitespace-nowrap text-sm">
+                      <span className="font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">{job.client}</span>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {displayJobName}
+                    <td className="px-6 py-4 whitespace-nowrap text-sm">
+                      <span className="font-bold bg-gradient-to-r from-indigo-600 to-pink-600 bg-clip-text text-transparent">{displayJobName}</span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                       {jobName && jobName !== 'Untitled Job' ? jobName : '-'}
@@ -154,8 +154,8 @@ const JobList = ({ jobs, onUpdate, onDelete, clientName = null }) => {
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                       {assignedTo}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {deliveryDate ? format(new Date(deliveryDate), 'MMM dd, yyyy') : 'Not Specified'}
+                    <td className="px-6 py-4 whitespace-nowrap text-sm">
+                      <span className="font-bold text-orange-600">{deliveryDate ? format(new Date(deliveryDate), 'MMM dd, yyyy') : 'Not Specified'}</span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <span className={`px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(job.status)}`}>
@@ -169,13 +169,13 @@ const JobList = ({ jobs, onUpdate, onDelete, clientName = null }) => {
                       <div className="flex gap-3">
                         <button
                           onClick={() => handleEdit(job)}
-                          className="text-blue-600 hover:text-blue-900"
+                          className="text-gray-600 hover:text-gray-800"
                         >
                           Edit
                         </button>
                         <button
                           onClick={() => onDelete && onDelete(job.id)}
-                          className="text-red-600 hover:text-red-900"
+                          className="text-gray-600 hover:text-gray-800"
                         >
                           Delete
                         </button>
