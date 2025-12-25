@@ -18,7 +18,14 @@ export const handler = async (event, context) => {
   }
 
   try {
-    await initDatabase();
+    // Initialize database first
+    try {
+      await initDatabase();
+    } catch (initError) {
+      console.error('Database initialization error:', initError);
+      // Continue anyway - table might already exist
+    }
+    
     const db = getDb();
 
     const { httpMethod, path, body, queryStringParameters } = event;
@@ -92,7 +99,25 @@ export const handler = async (event, context) => {
 
     // POST /api/jobs - Create new job
     if (httpMethod === 'POST' && !jobId) {
-      const data = JSON.parse(body || '{}');
+      let data;
+      try {
+        data = JSON.parse(body || '{}');
+      } catch (parseError) {
+        return {
+          statusCode: 400,
+          headers,
+          body: JSON.stringify({ error: 'Invalid JSON in request body' }),
+        };
+      }
+      
+      // Validate required fields
+      if (!data.client || !data.assignedTo) {
+        return {
+          statusCode: 400,
+          headers,
+          body: JSON.stringify({ error: 'Client and assignedTo are required' }),
+        };
+      }
       
       // Handle jobType - convert to array if it's a string, default to ['SM'] if empty
       let jobTypes = [];
@@ -106,37 +131,53 @@ export const handler = async (event, context) => {
       
       // Handle delivery date - default to today if not provided
       let deliveryDate;
-      if (data.deliveryDate) {
-        deliveryDate = new Date(data.deliveryDate).toISOString();
-      } else {
+      try {
+        if (data.deliveryDate) {
+          deliveryDate = new Date(data.deliveryDate).toISOString();
+        } else {
+          deliveryDate = new Date().toISOString();
+        }
+      } catch (dateError) {
         deliveryDate = new Date().toISOString();
       }
       
-      const [job] = await db`
-        INSERT INTO jobs (
-          client, assigned_to, category, job_name, job_type, delivery_date,
-          status, completion_status, led_deliverables, description
-        )
-        VALUES (
-          ${data.client},
-          ${data.assignedTo},
-          ${data.category || 'current job'},
-          ${data.jobName || 'Untitled Job'},
-          ${jobTypes},
-          ${deliveryDate},
-          ${data.status || 'pending'},
-          ${data.completionStatus || null},
-          ${data.ledDeliverables || []},
-          ${data.description || null}
-        )
-        RETURNING *
-      `;
+      try {
+        const [job] = await db`
+          INSERT INTO jobs (
+            client, assigned_to, category, job_name, job_type, delivery_date,
+            status, completion_status, led_deliverables, description
+          )
+          VALUES (
+            ${data.client},
+            ${data.assignedTo},
+            ${data.category || 'current job'},
+            ${data.jobName || 'Untitled Job'},
+            ${jobTypes},
+            ${deliveryDate},
+            ${data.status || 'pending'},
+            ${data.completionStatus || null},
+            ${data.ledDeliverables || []},
+            ${data.description || null}
+          )
+          RETURNING *
+        `;
 
-      return {
-        statusCode: 201,
-        headers,
-        body: JSON.stringify(job),
-      };
+        return {
+          statusCode: 201,
+          headers,
+          body: JSON.stringify(job),
+        };
+      } catch (dbError) {
+        console.error('Database error:', dbError);
+        return {
+          statusCode: 500,
+          headers,
+          body: JSON.stringify({ 
+            error: 'Database error',
+            message: dbError.message 
+          }),
+        };
+      }
     }
 
     // PUT /api/jobs/:id - Update job
