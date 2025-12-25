@@ -4,8 +4,14 @@ const API_BASE = import.meta.env.VITE_API_URL || '/api';
 
 const handleResponse = async (response) => {
   if (!response.ok) {
-    const error = await response.json().catch(() => ({ error: 'Unknown error' }));
-    throw new Error(error.error || `HTTP error! status: ${response.status}`);
+    let errorData;
+    try {
+      errorData = await response.json();
+    } catch (e) {
+      errorData = { error: `HTTP error! status: ${response.status}` };
+    }
+    const errorMessage = errorData.error || errorData.message || `HTTP error! status: ${response.status}`;
+    throw new Error(errorMessage);
   }
   return response.json();
 };

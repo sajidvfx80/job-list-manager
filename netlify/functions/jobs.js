@@ -94,12 +94,22 @@ export const handler = async (event, context) => {
     if (httpMethod === 'POST' && !jobId) {
       const data = JSON.parse(body || '{}');
       
-      // Handle jobType - convert to array if it's a string
+      // Handle jobType - convert to array if it's a string, default to ['SM'] if empty
       let jobTypes = [];
       if (Array.isArray(data.jobType)) {
-        jobTypes = data.jobType;
+        jobTypes = data.jobType.length > 0 ? data.jobType : ['SM'];
       } else if (data.jobType) {
         jobTypes = [data.jobType];
+      } else {
+        jobTypes = ['SM'];
+      }
+      
+      // Handle delivery date - default to today if not provided
+      let deliveryDate;
+      if (data.deliveryDate) {
+        deliveryDate = new Date(data.deliveryDate).toISOString();
+      } else {
+        deliveryDate = new Date().toISOString();
       }
       
       const [job] = await db`
@@ -110,10 +120,10 @@ export const handler = async (event, context) => {
         VALUES (
           ${data.client},
           ${data.assignedTo},
-          ${data.category},
-          ${data.jobName || null},
+          ${data.category || 'current job'},
+          ${data.jobName || 'Untitled Job'},
           ${jobTypes},
-          ${new Date(data.deliveryDate).toISOString()},
+          ${deliveryDate},
           ${data.status || 'pending'},
           ${data.completionStatus || null},
           ${data.ledDeliverables || []},
@@ -133,12 +143,22 @@ export const handler = async (event, context) => {
     if (httpMethod === 'PUT' && jobId) {
       const data = JSON.parse(body || '{}');
 
-      // Handle jobType - convert to array if it's a string
+      // Handle jobType - convert to array if it's a string, default to ['SM'] if empty
       let jobTypes = [];
       if (Array.isArray(data.jobType)) {
-        jobTypes = data.jobType;
+        jobTypes = data.jobType.length > 0 ? data.jobType : ['SM'];
       } else if (data.jobType) {
         jobTypes = [data.jobType];
+      } else {
+        jobTypes = ['SM'];
+      }
+      
+      // Handle delivery date - default to today if not provided
+      let deliveryDate;
+      if (data.deliveryDate) {
+        deliveryDate = new Date(data.deliveryDate).toISOString();
+      } else {
+        deliveryDate = new Date().toISOString();
       }
 
       const [job] = await db`
@@ -146,10 +166,10 @@ export const handler = async (event, context) => {
         SET
           client = ${data.client},
           assigned_to = ${data.assignedTo},
-          category = ${data.category},
-          job_name = ${data.jobName || null},
+          category = ${data.category || 'current job'},
+          job_name = ${data.jobName || 'Untitled Job'},
           job_type = ${jobTypes},
-          delivery_date = ${new Date(data.deliveryDate).toISOString()},
+          delivery_date = ${deliveryDate},
           status = ${data.status || 'pending'},
           completion_status = ${data.completionStatus || null},
           led_deliverables = ${data.ledDeliverables || []},

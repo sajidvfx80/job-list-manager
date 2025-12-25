@@ -121,7 +121,8 @@ const JobForm = ({ job = null, onSave, onCancel }) => {
       onSave();
     } catch (error) {
       console.error('Error saving job:', error);
-      alert('Failed to save job. Please try again.');
+      const errorMessage = error.message || 'Unknown error occurred';
+      alert(`Failed to save job: ${errorMessage}. Please check the console for details.`);
     }
   };
 
