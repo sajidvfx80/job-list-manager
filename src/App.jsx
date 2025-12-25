@@ -7,6 +7,7 @@ import DateFilterModal from './components/DateFilterModal';
 import AddClientModal from './components/AddClientModal';
 import EmployeeJobsModal from './components/EmployeeJobsModal';
 import PDFExportModal from './components/PDFExportModal';
+import JobFilterModal from './components/JobFilterModal';
 
 function App() {
   const [selectedClient, setSelectedClient] = useState(null);
@@ -20,10 +21,12 @@ function App() {
   const [showAddClient, setShowAddClient] = useState(false);
   const [showEmployeeModal, setShowEmployeeModal] = useState(false);
   const [showPDFExport, setShowPDFExport] = useState(false);
+  const [showJobFilterModal, setShowJobFilterModal] = useState(false);
+  const [selectedFilterType, setSelectedFilterType] = useState('all');
   const [refreshKey, setRefreshKey] = useState(0);
   const [lastRefreshTime, setLastRefreshTime] = useState(null);
   const [showRefreshNotification, setShowRefreshNotification] = useState(false);
-  const [jobFilter, setJobFilter] = useState('all'); // 'all', 'completed', 'current', 'pending'
+  const [jobFilter, setJobFilter] = useState('all'); // 'all', 'completed', 'current', 'pending' - for main view filtering
   const [darkMode, setDarkMode] = useState(false);
 
   useEffect(() => {
