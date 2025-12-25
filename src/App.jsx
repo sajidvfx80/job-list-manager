@@ -255,7 +255,7 @@ function App() {
         {employees.length > 0 && (
           <div className={`${darkMode ? 'bg-gray-800' : 'bg-white'} rounded-xl shadow-xl p-6 mb-6 transition-all duration-300 transform hover:scale-[1.01] hover:shadow-2xl`}>
             <div className="flex justify-between items-center mb-4">
-              <h2 className="text-xl font-bold">Employee Job Overview</h2>
+              <h2 className={`text-xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'} transition-colors duration-300`}>Employee Job Overview</h2>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {employees.map(emp => {
@@ -264,27 +264,27 @@ function App() {
                   <button
                     key={emp}
                     onClick={() => handleEmployeeSelect(emp)}
-                    className="border-2 border-gray-200 rounded-lg p-4 hover:shadow-md hover:border-blue-300 transition-all text-left"
+                    className={`border-2 ${darkMode ? 'border-gray-600 bg-gray-700/50 hover:border-blue-400' : 'border-gray-200 hover:border-blue-300'} rounded-xl p-4 hover:shadow-xl transition-all duration-300 transform hover:scale-105 text-left`}
                   >
                     <div className="flex justify-between items-start mb-3">
-                      <h3 className="text-lg font-semibold text-gray-900">{emp}</h3>
-                      <span className="text-2xl font-bold text-blue-600">{empStat.total}</span>
+                      <h3 className={`text-lg font-semibold ${darkMode ? 'text-white' : 'text-gray-900'} transition-colors duration-300`}>{emp}</h3>
+                      <span className="text-2xl font-bold bg-gradient-to-r from-blue-500 to-purple-600 bg-clip-text text-transparent">{empStat.total}</span>
                     </div>
                     <div className="grid grid-cols-3 gap-2 text-sm">
                       <div>
-                        <div className="text-gray-600">Current</div>
+                        <div className={darkMode ? 'text-gray-400' : 'text-gray-600'}>Current</div>
                         <div className="font-semibold text-blue-600">{empStat.current}</div>
                       </div>
                       <div>
-                        <div className="text-gray-600">Pending</div>
+                        <div className={darkMode ? 'text-gray-400' : 'text-gray-600'}>Pending</div>
                         <div className="font-semibold text-yellow-600">{empStat.pending}</div>
                       </div>
                       <div>
-                        <div className="text-gray-600">Completed</div>
+                        <div className={darkMode ? 'text-gray-400' : 'text-gray-600'}>Completed</div>
                         <div className="font-semibold text-green-600">{empStat.completed}</div>
                       </div>
                     </div>
-                    <div className="mt-3 text-xs text-blue-600 font-medium">
+                    <div className={`mt-3 text-xs font-medium transition-colors duration-300 ${darkMode ? 'text-blue-400' : 'text-blue-600'}`}>
                       Click to view jobs →
                     </div>
                   </button>
